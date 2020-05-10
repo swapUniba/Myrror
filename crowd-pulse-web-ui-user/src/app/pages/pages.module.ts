@@ -111,7 +111,7 @@ import { TelegramComponent } from './identities/telegram/telegram.component';
     FormsModule,
     TagCloudModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyDKoONUEVZK34qKI9ye5QLnplUIT7sFV6I',
+      apiKey: "placeholder",//inserire key qui,
     }),
   ],
   providers: [],
