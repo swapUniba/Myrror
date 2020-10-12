@@ -110,6 +110,8 @@ var PersonalDataSchema = builder(schemas.personalData, {
   typeFacility: String,
   typology: String,
   diagnosis: String,
+  medicalPrescription: String,
+  notePatient: String,
 //Disease
   nameDisease: String,
   dateDiagnosis: String,
