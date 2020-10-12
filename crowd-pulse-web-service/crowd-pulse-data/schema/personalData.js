@@ -97,6 +97,36 @@ var PersonalDataSchema = builder(schemas.personalData, {
   hour: String,
   //Medical Area**
   medicalArea: String,
+  //Diagnosis
+  diagnosis_name: String,
+//Medical Visit
+  nameVisit: String,
+  nameDoctor: String,
+  surnameDoctor: String,
+  nameFacility: String,
+  cityFacility: String,
+  adressFacility: String,
+  descriptionFacility: String,
+  typeFacility: String,
+  typology: String,
+  diagnosis: String,
+//Disease
+  nameDisease: String,
+  dateDiagnosis: String,
+  nameDoctor: String,
+  surnameDoctor: String,
+  placeDiagnosis: String,
+  completeDiagnosis: String,
+  note: String,
+//Hospitalizazion
+  name: String,
+  start_date: String, 
+  end_name: String , 
+  nameDoctor: String,
+  surnameDoctor: String,
+  hospitalWard: String,
+  medicalPrescription: String,
+  note: String
 
 
 
