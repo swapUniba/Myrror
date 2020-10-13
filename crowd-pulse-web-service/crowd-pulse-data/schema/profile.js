@@ -125,6 +125,12 @@ var ProfileSchema = builder(schemas.profile, {
         shareDiagnosis: Boolean,
         lastDiagnosisTimestamp: Number,
         shareProfile : Boolean,
+        shareMedicalVisit: Boolean,
+        lastMedicalVisitTimestamp: Number,
+        shareDisease: Boolean,
+        lastDiseaseTimestamp: Number,
+        shareHospitalization: Boolean,
+        lastHospitalizationTimestamp: Number
       },
 
       devicesConfig: [

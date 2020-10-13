@@ -97,6 +97,21 @@ exports.endpoint = function() {
               user.identities.configs.telegramConfig.shareDiagnosis = params.shareDiagnosis;
             }
 
+            if (params.shareMedicalVisit !== null && params.shareMedicalVisit !== undefined)
+            {
+              user.identities.configs.telegramConfig.shareMedicalVisit = params.shareMedicalVisit;
+            }
+
+            if (params.shareDisease !== null && params.shareDisease !== undefined)
+            {
+              user.identities.configs.telegramConfig.shareDisease = params.shareDisease;
+            }
+
+            if (params.shareHospitalization !== null && params.shareHospitalization !== undefined)
+            {
+              user.identities.configs.telegramConfig.shareHospitalization = params.shareHospitalization;
+            }
+
             
             user.save();
             res.status(200);
@@ -280,10 +295,113 @@ exports.endpoint = function() {
         res.sendStatus(500);
       }
     });
-  
- 
+
+
+    router.route('/telegram/medicalVisit')
+    .post(function (req, res) {
+      try {
+        var medicalVisitNumber = req.body.medicalVisitNumber;
+
+        // if the client do not specify a MedicalVisit number to read then update the user MedicalVisit
+        if (!medicalVisitNumber) {
+
+          deleteMedicalVisit(req.session.username, databaseName.globalData);
+          deleteMedicalVisit(req.session.username, req.session.username).then(
+          updateUserMedicalVisit(req.session.username).then(function () {
+            res.status(200);
+            res.json({auth: true});
+          }));
+        } else {
+
+          // return the MedicalVisit
+          var dbConnection = new CrowdPulse();
+          return dbConnection.connect(config.database.url, req.session.username).then(function (conn) {
+            return conn.PersonalData.find({source: /telegram-medicalVisit/}).limit(medicalVisitNumber);
+          }).then(function (medicalVisit) {
+            dbConnection.disconnect();
+            res.status(200);
+            res.json({auth: true, medicalVisit: medicalVisit});
+          });
+        }
+
+      } catch(err) {
+        console.log(err);
+        res.sendStatus(500);
+      }
+    });
+
+    router.route('/telegram/disease')
+    .post(function (req, res) {
+      try {
+        var diseaseNumber = req.body.diseaseNumber;
+
+        // if the client do not specify a disease number to read then update the user disease
+        if (!diseaseNumber) {
+
+          deleteDisease(req.session.username, databaseName.globalData);
+          deleteDisease(req.session.username, req.session.username).then(
+          updateUserDisease(req.session.username).then(function () {
+            res.status(200);
+            res.json({auth: true});
+          }));
+        } else {
+
+          // return the disease
+          var dbConnection = new CrowdPulse();
+          return dbConnection.connect(config.database.url, req.session.username).then(function (conn) {
+            return conn.PersonalData.find({source: /telegram-disease/}).limit(diseaseNumber);
+          }).then(function (disease) {
+            dbConnection.disconnect();
+            res.status(200);
+            res.json({auth: true, disease: disease});
+          });
+        }
+
+      } catch(err) {
+        console.log(err);
+        res.sendStatus(500);
+      }
+    });
+
+
+    router.route('/telegram/hospitalization')
+    .post(function (req, res) {
+      try {
+        var hospitalizationNumber = req.body.hospitalizationNumber;
+
+        // if the client do not specify a hospitalization number to read then update the user hospitalization
+        if (!hospitalizationNumber) {
+
+          deleteHospitalization(req.session.username, databaseName.globalData);
+          deleteHospitalization(req.session.username, req.session.username).then(
+          updateUserHospitalization(req.session.username).then(function () {
+            res.status(200);
+            res.json({auth: true});
+          }));
+        } else {
+
+          // return the hospitalization
+          var dbConnection = new CrowdPulse();
+          return dbConnection.connect(config.database.url, req.session.username).then(function (conn) {
+            return conn.PersonalData.find({source: /telegram-hospitalization/}).limit(hospitalizationNumber);
+          }).then(function (hospitalization) {
+            dbConnection.disconnect();
+            res.status(200);
+            res.json({auth: true, hospitalization: hospitalization});
+          });
+        }
+
+      } catch(err) {
+        console.log(err);
+        res.sendStatus(500);
+      }
+    });
+
+    
     return router;
   };
+
+
 /**
  * Update the user profile information.
  * @param username
@@ -312,6 +430,9 @@ var updateUserProfile = function(username, userData) {
             telegramConfig.shareAnalysis = true;
             telegramConfig.shareMedicalArea = true;
             telegramConfig.shareDiagnosis = true;
+            telegramConfig.shareMedicalVisit = true;
+            telegramConfig.shareDisease = true;
+            telegramConfig.shareHospitalization = true;
            
           }
 
@@ -703,6 +824,269 @@ var updateUserMedicalArea = function(username) {
     });
   });
 };
+
+
+/**
+ * Update the user mediacal visit information.
+ * @param username
+ * 
+ */
+var updateUserMedicalVisit = function(username) {
+  var dbConnection = new CrowdPulse();
+  return dbConnection.connect(config.database.url, DB_PROFILES).then(function (conn) {
+    return conn.Profile.findOne({username: username}, function (err, profile) {
+      if (profile) {
+
+
+        var medicalVisitToSave = [];
+        var telegramUsername = profile.identities.telegram.username;
+
+        const axios = require('axios')
+
+        var params;
+
+        if (profile.identities.configs.telegramConfig.lastMedicalVisitTimestamp ){
+
+          params ={
+                username : telegramUsername,
+                action : "actionGetMedicalVisitSince",
+                startdate: profile.identities.configs.telegramConfig.lastMedicalVisitTimestamp
+          }
+          console.log("not first medical visit request");
+        }else{
+
+          params = {  username : telegramUsername,
+                      action: "actionGetMedicalVisit"
+                    }
+          console.log("first medical visit request "+ telegramUsername);
+        }
+        
+        axios.post('http://193.204.187.192/MilellaBotAPI/api_gateway.php', params)
+        .then((res2) => {
+          console.log(`statusCode: ${res2.statusCode}`)
+          console.log(res2.data)
+
+          try {
+            
+            for (let i = 0; i < res2.data.length; i++) {
+              medicalVisitToSave.push({
+                username: username,
+                nameVisit: res2.data[i].nameVisit,
+                nameDoctor: res2.data[i].nameDoctor,
+                surnameDoctor: res2.data[i].surnameDoctor,
+                nameFacility: res2.data[i].nameFacility,
+                cityFacility: res2.data[i].cityFacility,
+                addressFacility: res2.data[i].adressFacility,
+                descriptionFacility: res2.data[i].descriptionFacility,
+                typeFacility: res2.data[i].typeFacility,
+                typology: res2.data[i].typology,
+                diagnosis: res2.data[i].diagnosis,
+                medicalPrescription: res2.data[i].medicalPrescription,
+                notePatient: res2.data[i].notePatient,
+
+                source: 'telegram-medicalVisit'
+
+              })
+            }
+
+            storeMedicalVisit(medicalVisitToSave, username).then(function () {
+            storeMedicalVisit(medicalVisitToSave, databaseName.globalData);
+            });
+            
+          } catch(e){
+            console.log(e);
+          }
+         
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+
+        profile.identities.configs.telegramConfig.lastMedicalVisitTimestamp = Math.floor(Date.now() / 1000);
+        profile.save().then(function () {
+          console.log("Telegram profile of " + username + " updated at " + new Date());
+          dbConnection.disconnect();
+        });
+
+        
+      }
+    });
+  });
+};
+
+
+/**
+ * Update the user disease information.
+ * @param username
+ * 
+ */
+var updateUserDisease = function(username) {
+  var dbConnection = new CrowdPulse();
+  return dbConnection.connect(config.database.url, DB_PROFILES).then(function (conn) {
+    return conn.Profile.findOne({username: username}, function (err, profile) {
+      if (profile) {
+
+
+        var diseaseToSave = [];
+        var telegramUsername = profile.identities.telegram.username;
+
+        const axios = require('axios')
+
+        var params;
+
+        if (profile.identities.configs.telegramConfig.lastDiseaseTimestamp ){
+
+          params ={
+                username : telegramUsername,
+                action : "actionGetDiseaseSince",
+                startdate: profile.identities.configs.telegramConfig.lastDiseaseTimestamp
+          }
+          console.log("not first disease request");
+        }else{
+
+          params = {  username : telegramUsername,
+                      action: "actionGetDisease"
+                    }
+          console.log("first disease request "+ telegramUsername);
+        }
+        
+        axios.post('http://193.204.187.192/MilellaBotAPI/api_gateway.php', params)
+        .then((res2) => {
+          console.log(`statusCode: ${res2.statusCode}`)
+          console.log(res2.data)
+
+          try {
+            
+            for (let i = 0; i < res2.data.length; i++) {
+              diseaseToSave.push({
+                username: username,
+                nameDisease: res2.data[i].nameDisease,
+                dateDiagnosis: res2.data[i].dateDiagnosis,
+                nameDoctor: res2.data[i].nameDoctor,
+                surnameDoctor: res2.data[i].surnameDoctor,
+                placeDiagnosis: res2.data[i].placeDiagnosis,
+                completeDiagnosis: res2.data[i].completeDiagnosis,
+                note: res2.data[i].note,
+
+                source: 'telegram-disease'
+
+              })
+            }
+
+            storeDisease(diseaseToSave, username).then(function () {
+            storeDisease(diseaseToSave, databaseName.globalData);
+            });
+            
+          } catch(e){
+            console.log(e);
+          }
+         
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+
+        profile.identities.configs.telegramConfig.lastDiseaseTimestamp = Math.floor(Date.now() / 1000);
+        profile.save().then(function () {
+          console.log("Telegram profile of " + username + " updated at " + new Date());
+          dbConnection.disconnect();
+        });
+
+        
+      }
+    });
+  });
+};
+
+
+/**
+ * Update the hospitalization information.
+ * @param username
+ * 
+ */
+var updateUserHospitalization = function(username) {
+  var dbConnection = new CrowdPulse();
+  return dbConnection.connect(config.database.url, DB_PROFILES).then(function (conn) {
+    return conn.Profile.findOne({username: username}, function (err, profile) {
+      if (profile) {
+
+
+        var hospitalizationToSave = [];
+        var telegramUsername = profile.identities.telegram.username;
+
+        const axios = require('axios')
+
+        var params;
+
+        if (profile.identities.configs.telegramConfig.lastHospitalizationTimestamp ){
+
+          params ={
+                username : telegramUsername,
+                action : "actionGetHospitalizationSince",
+                startdate: profile.identities.configs.telegramConfig.lastHospitalizationTimestamp
+          }
+          console.log("not first hospitalization request");
+        }else{
+
+          params = {  username : telegramUsername,
+                      action: "actionGeHospitalization"
+                    }
+          console.log("first hospitalization request "+ telegramUsername);
+        }
+        
+        axios.post('http://193.204.187.192/MilellaBotAPI/api_gateway.php', params)
+        .then((res2) => {
+          console.log(`statusCode: ${res2.statusCode}`)
+          console.log(res2.data)
+
+          try {
+            
+            for (let i = 0; i < res2.data.length; i++) {
+              hospitalizationToSave.push({
+                username: username,
+                name: res2.data[i].name,
+                start_date: res2.data[i].start_date, 
+                end_date: res2.data[i].end_date, 
+                nameDoctor: res2.data[i].nameDoctor,
+                surnameDoctor: res2.data[i].surnameDoctor,
+                hospitalWard: res2.data[i].hospitalWard,
+                medicalPrescription: res2.data[i].medicalPrescription,
+                note: res2.data[i].note,
+
+                source: 'telegram-hospitalization'
+
+              })
+            }
+
+            storeHospitalization(hospitalizationToSave, username).then(function () {
+            storeHospitalization(hospitalizationToSave, databaseName.globalData);
+            });
+            
+          } catch(e){
+            console.log(e);
+          }
+         
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+
+        profile.identities.configs.telegramConfig.lastHospitalizationTimestamp = Math.floor(Date.now() / 1000);
+        profile.save().then(function () {
+          console.log("Telegram profile of " + username + " updated at " + new Date());
+          dbConnection.disconnect();
+        });
+
+        
+      }
+    });
+  });
+};
+
+
+
+
+
 /**
  * Store Diagnosiss in the MongoDB database
  * @param Diagnosiss
@@ -793,9 +1177,9 @@ var storemedicalArea = function(medicalArea, databaseName) {
     if (medicalArea.length <= 0) {
       return dbConnection.disconnect();
     }
-    medicalArea.forEach(function (Diagnosis) {
+    medicalArea.forEach(function (MedicalArea) {
 
-      return conn.PersonalData.newFromObject(Diagnosis).save().then(function () {
+      return conn.PersonalData.newFromObject(MedicalArea).save().then(function () {
         medicalAreaSaved++;
 
         if (medicalAreaSaved >= medicalArea.length) {
@@ -806,6 +1190,92 @@ var storemedicalArea = function(medicalArea, databaseName) {
     });
   });
 };
+
+
+
+/**
+ * Store medicalVisit in the MongoDB database
+ * @param medicalVisit
+ * @param databaseName
+ */
+var storeMedicalVisit = function(medicalVisit, databaseName) {
+
+  var dbConnection = new CrowdPulse();
+  var medicalVisitSaved = 0;
+  return dbConnection.connect(config.database.url, databaseName).then(function (conn) {
+    if (medicalVisit.length <= 0) {
+      return dbConnection.disconnect();
+    }
+    medicalVisit.forEach(function (MedicalVisit) {
+
+      return conn.PersonalData.newFromObject(MedicalVisit).save().then(function () {
+        medicalVisitSaved++;
+
+        if (medicalVisitSaved >= medicalVisit.length) {
+          console.log(medicalVisit.length + " medicalVisit from MilellaBotAPI saved in " + databaseName + " at " + new Date());
+          return dbConnection.disconnect();
+        }
+      });
+    });
+  });
+};
+
+/**
+ * Store disease in the MongoDB database
+ * @param disease
+ * @param databaseName
+ */
+var storeDisease = function(disease, databaseName) {
+
+  var dbConnection = new CrowdPulse();
+  var diseaseSaved = 0;
+  return dbConnection.connect(config.database.url, databaseName).then(function (conn) {
+    if (disease.length <= 0) {
+      return dbConnection.disconnect();
+    }
+    disease.forEach(function (Disease) {
+
+      return conn.PersonalData.newFromObject(Disease).save().then(function () {
+        diseaseSaved++;
+
+        if (diseaseSaved >= disease.length) {
+          console.log(disease.length + " disease from MilellaBotAPI saved in " + databaseName + " at " + new Date());
+          return dbConnection.disconnect();
+        }
+      });
+    });
+  });
+};
+
+
+/**
+ * Store hospitalization in the MongoDB database
+ * @param hospitalization
+ * @param databaseName
+ */
+var storeHospitalization = function(hospitalization, databaseName) {
+
+  var dbConnection = new CrowdPulse();
+  var hospitalizationSaved = 0;
+  return dbConnection.connect(config.database.url, databaseName).then(function (conn) {
+    if (hospitalization.length <= 0) {
+      return dbConnection.disconnect();
+    }
+    hospitalization.forEach(function (Hospitalization) {
+
+      return conn.PersonalData.newFromObject(Hospitalization).save().then(function () {
+        hospitalizationSaved++;
+
+        if (hospitalizationSaved >= hospitalization.length) {
+          console.log(hospitalization.length + " hospitalization from MilellaBotAPI saved in " + databaseName + " at " + new Date());
+          return dbConnection.disconnect();
+        }
+      });
+    });
+  });
+};
+
+
 
 /**
  * Delete medical area stored in the MongoDB database
@@ -885,3 +1355,64 @@ var deleteDiagnosis = function(username, databaseName) {
     });
   });
 };
+
+
+/**
+ * Delete medical visit stored in the MongoDB database
+ * @param username
+ * @param databaseName
+ */
+var deleteMedicalVisit = function(username, databaseName) {
+  var dbConnection = new CrowdPulse();
+  return dbConnection.connect(config.database.url, databaseName).then(function (conn) {
+    return conn.PersonalData.deleteMany({username: username, source: /telegram-medicalVisit.*/}, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Telegram Medical Visit deleted from " + databaseName + " at " + new Date());
+      }
+      return dbConnection.disconnect();
+    });
+  });
+};
+
+
+/**
+ * Delete disease stored in the MongoDB database
+ * @param username
+ * @param databaseName
+ */
+var deleteDisease = function(username, databaseName) {
+  var dbConnection = new CrowdPulse();
+  return dbConnection.connect(config.database.url, databaseName).then(function (conn) {
+    return conn.PersonalData.deleteMany({username: username, source: /telegram-disease.*/}, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Telegram disease deleted from " + databaseName + " at " + new Date());
+      }
+      return dbConnection.disconnect();
+    });
+  });
+};
+
+
+/**
+ * Delete disease stored in the MongoDB database
+ * @param username
+ * @param databaseName
+ */
+var deleteHospitalization = function(username, databaseName) {
+  var dbConnection = new CrowdPulse();
+  return dbConnection.connect(config.database.url, databaseName).then(function (conn) {
+    return conn.PersonalData.deleteMany({username: username, source: /telegram-hospitalization.*/}, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Telegram hospitalization deleted from " + databaseName + " at " + new Date());
+      }
+      return dbConnection.disconnect();
+    });
+  });
+};
+
