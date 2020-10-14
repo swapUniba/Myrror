@@ -268,6 +268,41 @@ export class ProfileStatsComponent {
         filters: [this.filters.filterDate],
       },
     ]
+  }, {
+    name: 'Medical Visit',
+    id: 'medicalVisit-list',
+    description: 'This view shows medical visit stored in HealthAssistantBot',
+    types: [
+      {
+        name: 'list',
+        id: 'list',
+        filters: [this.filters.filterDate],
+      },
+    ]
+  },
+
+  {
+    name: 'Disease',
+    id: 'disease-list',
+    description: 'This view shows disease stored in HealthAssistantBot',
+    types: [
+      {
+        name: 'list',
+        id: 'list',
+        filters: [this.filters.filterDate],
+      },
+    ]
+  }, {
+    name: 'Hospitalization',
+    id: 'hospitalization-list',
+    description: 'This view shows hospitalization stored in HealthAssistantBot',
+    types: [
+      {
+        name: 'list',
+        id: 'list',
+        filters: [this.filters.filterDate],
+      },
+    ]
   },
 
     // TODO add here new visualization
@@ -365,8 +400,23 @@ export class ProfileStatsComponent {
     /**
   * analysis array
   */
- analysis = [];
+  analysis = [];
+
+ /**
+  * medicalVisit array
+  */
+  medicalVisit = [];
   
+  /**
+  * disease array
+  */
+   disease = [];
+
+   /**
+  * hospitalization array
+  */
+  hospitalization = [];
+
 
   constructor(
     private statsService: StatsService,
@@ -470,7 +520,16 @@ export class ProfileStatsComponent {
       break;
       case 'analysis-list':
       this.buildAnalysisDataSourceTable();
+      break; 
+      case 'medicalVisit-list':
+      this.buildMedicalVisitDataSourceTable();
       break;  
+      case 'disease-list':
+      this.buildDiseaseDataSourceTable();
+      break; 
+      case 'hospitalization-list':
+      this.buildHospitalizationDataSourceTable();
+      break; 
       default:
         this.customChart = null;
         this.chartsLoading = false;
@@ -1409,6 +1468,40 @@ private buildAnalysisDataSourceTable(type?: string): Promise<Chart | any> {
       
       this.analysis = stats;
       
+      
+    },
+    (err) => {
+      this.chartsLoading = false;
+    });
+}
+
+
+private buildMedicalVisitDataSourceTable(type?: string): Promise<Chart | any> {
+  return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filters.filterDate).then(
+    (stats) => {    
+      this.therapy = stats;
+      
+    },
+    (err) => {
+      this.chartsLoading = false;
+    });
+}
+
+private buildDiseaseDataSourceTable(type?: string): Promise<Chart | any> {
+  return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filters.filterDate).then(
+    (stats) => {    
+      this.therapy = stats;
+      
+    },
+    (err) => {
+      this.chartsLoading = false;
+    });
+}
+
+private buildHospitalizationDataSourceTable(type?: string): Promise<Chart | any> {
+  return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filters.filterDate).then(
+    (stats) => {    
+      this.therapy = stats;
       
     },
     (err) => {

@@ -321,6 +321,23 @@ PersonalDataSchema.statics.statTherapyTableTypeDataTelegram = function (from, to
   return Q
 };
 
+PersonalDataSchema.statics.statMedicalVisitTableTypeDataTelegram = function (from, to) {
+  var Q = this.aggregate(buildMedicalVisitTypeFilterQueryTelegramTable(from, to)).exec();
+
+  return Q
+};
+
+PersonalDataSchema.statics.statDiseaseTableTypeDataTelegram = function (from, to) {
+  var Q = this.aggregate(buildDiseaseTypeFilterQueryTelegramTable(from, to)).exec();
+
+  return Q
+};
+
+PersonalDataSchema.statics.statHospitalizationTableTypeDataTelegram = function (from, to) {
+  var Q = this.aggregate(buildHospitalizationTypeFilterQueryTelegramTable(from, to)).exec();
+
+  return Q
+};
 
 PersonalDataSchema.statics.statBodyTypeDataFitbit = function (from, to) {
   return Q(this.aggregate(buildBodyTypeFilterQueryFitbit(from, to)).exec());
@@ -900,6 +917,141 @@ var buildTherapyTypeFilterQueryTelegramTable = function (from, to) {
 
   return aggregations;
 };
+
+
+var buildMedicalVisitTypeFilterQueryTelegramTable = function (from, to) {
+  var filter = undefined;
+
+  from = new Date(from);
+  to = new Date(to);
+  var hasFrom = !isNaN(from.getDate());
+  var hasTo = !isNaN(to.getDate());
+
+  if (hasFrom || hasTo) {
+    filter = {$match: {}};
+
+    if (hasFrom || hasTo) {
+      filter.$match['timestamp'] = {};
+      if (hasFrom) {
+        
+        filter.$match['timestamp']['$gte'] = from.getTime();
+         
+        
+      }
+      if (hasTo) {
+        
+        filter.$match['timestamp']['$lte'] = to.getTime();
+         
+        
+      }
+    }
+  } 
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $match: {
+      source: 'telegram-medicalVisit'
+    }
+  });
+
+  return aggregations;
+};
+
+
+var buildDiseaseTypeFilterQueryTelegramTable = function (from, to) {
+  var filter = undefined;
+
+  from = new Date(from);
+  to = new Date(to);
+  var hasFrom = !isNaN(from.getDate());
+  var hasTo = !isNaN(to.getDate());
+
+  if (hasFrom || hasTo) {
+    filter = {$match: {}};
+
+    if (hasFrom || hasTo) {
+      filter.$match['timestamp'] = {};
+      if (hasFrom) {
+        
+        filter.$match['timestamp']['$gte'] = from.getTime();
+         
+        
+      }
+      if (hasTo) {
+        
+        filter.$match['timestamp']['$lte'] = to.getTime();
+         
+        
+      }
+    }
+  } 
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $match: {
+      source: 'telegram-disease'
+    }
+  });
+
+  return aggregations;
+};
+
+
+var buildHospitalizationTypeFilterQueryTelegramTable = function (from, to) {
+  var filter = undefined;
+
+  from = new Date(from);
+  to = new Date(to);
+  var hasFrom = !isNaN(from.getDate());
+  var hasTo = !isNaN(to.getDate());
+
+  if (hasFrom || hasTo) {
+    filter = {$match: {}};
+
+    if (hasFrom || hasTo) {
+      filter.$match['timestamp'] = {};
+      if (hasFrom) {
+        
+        filter.$match['timestamp']['$gte'] = from.getTime();
+         
+        
+      }
+      if (hasTo) {
+        
+        filter.$match['timestamp']['$lte'] = to.getTime();
+         
+        
+      }
+    }
+  } 
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $match: {
+      source: 'telegram-hospitalization'
+    }
+  });
+
+  return aggregations;
+};
+
+
+
 
 
 var buildBodyTypeFilterQueryFitbitLine = function (from, to) {

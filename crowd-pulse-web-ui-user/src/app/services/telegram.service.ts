@@ -12,6 +12,9 @@ const API_USER_DIAGNOSIS = 'api/telegram/diagnosis';
 const API_USER_ANALYSIS = 'api/telegram/analysis';
 const API_USER_THERAPY = 'api/telegram/therapy';
 const API_USER_MEDICALAREA = 'api/telegram/medicalArea';
+const API_USER_MEDICALVISIT = 'api/telegram/medicalVisit';
+const API_USER_DISEASE = 'api/telegram/disease';
+const API_USER_HOSPITALIZATION = 'api/telegram/hospitalization';
 
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1000;
@@ -46,7 +49,7 @@ export class TelegramService {
    * @param option: share options
    * @return {Observable<Object>}
    */
-  configuration(option: {shareTherapy?: boolean, shareAnalysis?: boolean, shareMedicalArea?: boolean, shareDiagnosis?: boolean}): Observable<any> {
+  configuration(option: {shareTherapy?: boolean, shareAnalysis?: boolean, shareMedicalArea?: boolean, shareDiagnosis?: boolean, shareMedicalVisit?: boolean, shareDisease?: boolean, shareHospitalization?: boolean}): Observable<any> {
     let params = '?';
 
     if (!isNullOrUndefined(option.shareTherapy)) {
@@ -62,6 +65,18 @@ export class TelegramService {
 
     if (!isNullOrUndefined(option.shareDiagnosis)) {
       params += 'shareDiagnosis=' + option.shareDiagnosis + '&';
+    }
+
+    if (!isNullOrUndefined(option.shareMedicalVisit)) {
+      params += 'shareMedicalVisit=' + option.shareMedicalVisit + '&';
+    }
+
+    if (!isNullOrUndefined(option.shareDisease)) {
+      params += 'shareDisease=' + option.shareDisease + '&';
+    }
+
+    if (!isNullOrUndefined(option.shareHospitalization)) {
+      params += 'shareHospitalization=' + option.shareHospitalization + '&';
     }
 
     return this.http.get(`${this.url}${API_CONFIG}${params}`);
@@ -105,6 +120,31 @@ userMedicalArea(medicalAreaToRead?: Number): Observable<any>  {
     medicalAreaNumber: medicalAreaToRead,
   }
   return this.http.post(`${this.url}${API_USER_MEDICALAREA}`, postParams);
+}
+
+userMedicalVisit(medicalVisitToRead?: Number): Observable<any>  {
+    
+  const postParams = {
+    medicalVisitNumber: medicalVisitToRead,
+  }
+  return this.http.post(`${this.url}${API_USER_MEDICALVISIT}`, postParams);
+}
+
+userDisease(diseaseToRead?: Number): Observable<any>  {
+    
+  const postParams = {
+    diseaseNumber: diseaseToRead,
+  }
+  return this.http.post(`${this.url}${API_USER_DISEASE}`, postParams);
+}
+
+
+userHospitalization(hospitalizationToRead?: Number): Observable<any>  {
+    
+  const postParams = {
+    hospitalizationNumber: hospitalizationToRead,
+  }
+  return this.http.post(`${this.url}${API_USER_HOSPITALIZATION}`, postParams);
 }
 
 }
