@@ -133,7 +133,7 @@ exports.endpoint = function() {
   });
   
   /**
-   * Delete Fitbit information account.
+   * Delete Telegram information account.
    */
   router.route('/telegram/delete')
     .delete(function (req, res) {
@@ -155,6 +155,13 @@ exports.endpoint = function() {
               deleteDiagnosis(req.session.username, databaseName.globalData);
               deleteTherapy(req.session.username, req.session.username);
               deleteTherapy(req.session.username, databaseName.globalData);
+              deleteMedicalVisit(req.session.username, req.session.username);
+              deleteMedicalVisit(req.session.username, databaseName.globalData);
+              deleteHospitalization(req.session.username, req.session.username);
+              deleteHospitalization(req.session.username, databaseName.globalData);
+              deleteDisease(req.session.username, req.session.username);
+              deleteDisease(req.session.username, databaseName.globalData);
+
 
               res.status(200);
               res.json({auth: true});
@@ -305,12 +312,11 @@ exports.endpoint = function() {
         // if the client do not specify a MedicalVisit number to read then update the user MedicalVisit
         if (!medicalVisitNumber) {
 
-          deleteMedicalVisit(req.session.username, databaseName.globalData);
-          deleteMedicalVisit(req.session.username, req.session.username).then(
+        
           updateUserMedicalVisit(req.session.username).then(function () {
             res.status(200);
             res.json({auth: true});
-          }));
+          });
         } else {
 
           // return the MedicalVisit
@@ -338,12 +344,11 @@ exports.endpoint = function() {
         // if the client do not specify a disease number to read then update the user disease
         if (!diseaseNumber) {
 
-          deleteDisease(req.session.username, databaseName.globalData);
-          deleteDisease(req.session.username, req.session.username).then(
+        
           updateUserDisease(req.session.username).then(function () {
             res.status(200);
             res.json({auth: true});
-          }));
+          });
         } else {
 
           // return the disease
@@ -372,12 +377,11 @@ exports.endpoint = function() {
         // if the client do not specify a hospitalization number to read then update the user hospitalization
         if (!hospitalizationNumber) {
 
-          deleteHospitalization(req.session.username, databaseName.globalData);
-          deleteHospitalization(req.session.username, req.session.username).then(
+        
           updateUserHospitalization(req.session.username).then(function () {
             res.status(200);
             res.json({auth: true});
-          }));
+          });
         } else {
 
           // return the hospitalization
