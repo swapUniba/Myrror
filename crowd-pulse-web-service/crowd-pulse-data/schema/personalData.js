@@ -127,6 +127,7 @@ var PersonalDataSchema = builder(schemas.personalData, {
   nameDoctor: String,
   surnameDoctor: String,
   hospitalWard: String,
+  diagnosisHospitalization:String,
   medicalPrescription: String,
   note: String
 

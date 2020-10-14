@@ -207,11 +207,11 @@
         <mat-card fxFlex="48" fxFlex.lt-md="100" class="facebook-card">
           <div *ngIf="medicalVisit.length > 0; else noMedicalVisit">
             <mat-card-title>Your Medical Visits</mat-card-title>
-            <div class="post-like-div" *ngFor="let medicalVisit of medicalVisits">
-              <p>Medical Visit Name: {{ medicalVisit.nameVisit }}</p>
-              <p>Name Facility: {{ medicalVisit.cityFacility }}</p>
-              <p>Diagnosis: {{ medicalVisit.diagnosis }}</p>
-              <p>Medical Prescription: {{ medicalVisit.medicalPrescription }}</p>
+            <div class="post-like-div" *ngFor="let mv of medicalVisit">
+              <p>Medical Visit Name: {{ mv.nameVisit }}</p>
+              <p>Name Facility: {{ mv.cityFacility }}</p>
+              <p>Diagnosis: {{ mv.diagnosis }}</p>
+              <p>Medical Prescription: {{ mv.medicalPrescription }}</p>
               <mat-divider></mat-divider>
             </div>          
             <button mat-raised-button color="primary" (click)="updateMedicalVisit(true, 5)">

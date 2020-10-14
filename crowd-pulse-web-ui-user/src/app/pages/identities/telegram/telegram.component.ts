@@ -561,7 +561,7 @@ export class TelegramComponent implements OnInit {
 
     
     this.loadingDisease= true;
-    this.telegramService.userMedicalVisit(diseasenumber).subscribe(
+    this.telegramService.userDisease(diseasenumber).subscribe(
       (res) => {
         this.loadingDisease = false;
         if (res) {
@@ -610,14 +610,14 @@ export class TelegramComponent implements OnInit {
 
     
     this.loadingHospitalization= true;
-    this.telegramService.userMedicalVisit(hospitalizationnumber).subscribe(
+    this.telegramService.userHospitalization(hospitalizationnumber).subscribe(
       (res) => {
         this.loadingHospitalization = false;
         if (res) {
           if (showToast) {
             this.toast.success('Hospitalization Updated');
           }
-          if (res.hospitalization && res.hisease.length > 0) {
+          if (res.hospitalization && res.hospitalization.length > 0) {
             this.hospitalization = res.hospitalization;
 
           } 
@@ -632,10 +632,10 @@ export class TelegramComponent implements OnInit {
       });
     } else {
       if (showToast){
-      this.toast.error("Disease update not allowed")
+      this.toast.error("Hospitalization update not allowed")
       } else {
 
-        this.telegramService.userDisease(hospitalizationnumber).subscribe(
+        this.telegramService.userHospitalization(hospitalizationnumber).subscribe(
           (res) => {
             this.loadingHospitalization = false;
             if (res) {

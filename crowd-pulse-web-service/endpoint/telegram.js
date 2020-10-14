@@ -1029,7 +1029,7 @@ var updateUserHospitalization = function(username) {
         }else{
 
           params = {  username : telegramUsername,
-                      action: "actionGeHospitalization"
+                      action: "actionGetHospitalization"
                     }
           console.log("first hospitalization request "+ telegramUsername);
         }
@@ -1050,6 +1050,7 @@ var updateUserHospitalization = function(username) {
                 nameDoctor: res2.data[i].nameDoctor,
                 surnameDoctor: res2.data[i].surnameDoctor,
                 hospitalWard: res2.data[i].hospitalWard,
+                diagnosisHospitalization: res2.data[i].diagnosisHospitalization,
                 medicalPrescription: res2.data[i].medicalPrescription,
                 note: res2.data[i].note,
 
