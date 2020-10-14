@@ -216,7 +216,7 @@
             </div>          
             <button mat-raised-button color="primary" (click)="updateMedicalVisit(true, 5)">
               <mat-icon aria-label="get_data">cached</mat-icon>
-              Update Medical Visit
+              Update Medical Visits
             </button>
           </div>
           <ng-template #noMedicalVisit>
@@ -226,7 +226,7 @@
             </mat-card-content>
             <button mat-raised-button color="primary" (click)="updateMedicalVisit(true, 5)">
               <mat-icon aria-label="get_data">get_app</mat-icon>
-              Get Medical visit
+              Get Medical visits
             </button>
           </ng-template>
         </mat-card>
@@ -241,15 +241,15 @@
         <mat-card fxFlex="48" fxFlex.lt-md="100" class="facebook-card">
           <div *ngIf="disease.length > 0; else noDisease">
             <mat-card-title>Your Diseases</mat-card-title>
-            <div class="post-like-div" *ngFor="let disease of diseases">
-              <p>Name Disease: {{ disease.nameDisease }}</p>
-              <p>Place Diagnosy: {{ disease.placeDiagnosis }}</p>
-              <p>Complete Diagnosy: {{ disease.completeDiagnosis }}</p>
+            <div class="post-like-div" *ngFor="let di of disease">
+              <p>Name Disease: {{ di.nameDisease }}</p>
+              <p>Place Diagnosy: {{ di.placeDiagnosis }}</p>
+              <p>Complete Diagnosy: {{ di.completeDiagnosis }}</p>
               <mat-divider></mat-divider>
             </div>          
             <button mat-raised-button color="primary" (click)="updateDisease(true, 5)">
               <mat-icon aria-label="get_data">cached</mat-icon>
-              Update Disease
+              Update Diseases
             </button>
           </div>
           <ng-template #noDisease>
@@ -259,7 +259,7 @@
             </mat-card-content>
             <button mat-raised-button color="primary" (click)="updateDisease(true, 5)">
               <mat-icon aria-label="get_data">get_app</mat-icon>
-              Get Disease
+              Get Diseases
             </button>
           </ng-template>
         </mat-card>
@@ -275,15 +275,15 @@
         <mat-card fxFlex="48" fxFlex.lt-md="100" class="facebook-card">
           <div *ngIf="hospitalization.length > 0; else noHospitalization">
             <mat-card-title>Your Hospitalizations</mat-card-title>
-            <div class="post-like-div" *ngFor="let hospitalization of hospitalizations">
-              <p>Name Hospitalization: {{ hospitalization.name }}</p>
-              <p>Hospital Ward: {{ hospitalization.hospitalWard }}</p>
-              <p>Medical Prescription: {{ hospitalization.medicalPrescription }}</p>
+            <div class="post-like-div" *ngFor="let h of hospitalization">
+              <p>Name Hospitalization: {{ h.name }}</p>
+              <p>Hospital Ward: {{ h.hospitalWard }}</p>
+              <p>Medical Prescription: {{ h.medicalPrescription }}</p>
               <mat-divider></mat-divider>
             </div>          
             <button mat-raised-button color="primary" (click)="updateHospitalization(true, 5)">
               <mat-icon aria-label="get_data">cached</mat-icon>
-              Update Hospitalization
+              Update Hospitalizations
             </button>
           </div>
           <ng-template #noHospitalization>
@@ -293,7 +293,7 @@
             </mat-card-content>
             <button mat-raised-button color="primary" (click)="updateHospitalization(true, 5)">
               <mat-icon aria-label="get_data">get_app</mat-icon>
-              Get Hospitalization
+              Get Hospitalizations
             </button>
           </ng-template>
         </mat-card>
