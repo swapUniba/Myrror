@@ -312,11 +312,12 @@ exports.endpoint = function() {
         // if the client do not specify a MedicalVisit number to read then update the user MedicalVisit
         if (!medicalVisitNumber) {
 
-        
+          deleteMedicalVisit(req.session.username, databaseName.globalData);
+          deleteMedicalVisit(req.session.username, req.session.username).then(
           updateUserMedicalVisit(req.session.username).then(function () {
             res.status(200);
             res.json({auth: true});
-          });
+          }));
         } else {
 
           // return the MedicalVisit
@@ -344,11 +345,12 @@ exports.endpoint = function() {
         // if the client do not specify a disease number to read then update the user disease
         if (!diseaseNumber) {
 
-        
+          deleteDisease(req.session.username, databaseName.globalData);
+          deleteDisease(req.session.username, req.session.username).then(
           updateUserDisease(req.session.username).then(function () {
             res.status(200);
             res.json({auth: true});
-          });
+          }));
         } else {
 
           // return the disease
@@ -377,11 +379,12 @@ exports.endpoint = function() {
         // if the client do not specify a hospitalization number to read then update the user hospitalization
         if (!hospitalizationNumber) {
 
-        
+          deleteHospitalization(req.session.username, databaseName.globalData);
+          deleteHospitalization(req.session.username, req.session.username).then(
           updateUserHospitalization(req.session.username).then(function () {
             res.status(200);
             res.json({auth: true});
-          });
+          }));
         } else {
 
           // return the hospitalization
