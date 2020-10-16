@@ -682,16 +682,10 @@ var updateUserTherapy = function(username) {
         var params;
 
         if (profile.identities.configs.telegramConfig.lastTherapyTimestamp ){
-          var date = new Date(profile.identities.configs.telegramConfig.lastTherapyTimestamp);
-          var year = date.getFullYear();
-          var month = date.getMonth() + 1;
-          var day = date.getDate();
-          var startdate = year+"-"+month +"-"+day;
-          console.log(startdate);
           params ={
                 username : telegramUsername,
                 action : "actionGetTherapySince",
-                startdate: startdate,
+                startdate: profile.identities.configs.telegramConfig.lastTherapyTimestamp,
           }
           console.log("not first Therapy request");
           
@@ -714,7 +708,7 @@ var updateUserTherapy = function(username) {
             for (let i = 0; i < res2.data.length; i++) {
               therapyToSave.push({
                 username: username,
-                timestamp: new Date(res2.data[i].start_date).getTime(),
+                timestamp: res2.data.timestamp,
                 therapyName: res2.data[i].therapyName,
                 dosage: res2.data[i].dosage,
                 start_date: res2.data[i].start_date,
