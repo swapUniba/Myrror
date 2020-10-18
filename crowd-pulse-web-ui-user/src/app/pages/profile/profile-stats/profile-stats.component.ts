@@ -279,6 +279,28 @@ export class ProfileStatsComponent {
         filters: [this.filters.filterDate],
       },
     ]
+  }, {
+    name: 'Disease',
+    id: 'disease-list',
+    description: 'This view shows the disease stored in HealthAssistantBot',
+    types: [
+      {
+        name: 'list',
+        id: 'list',
+        filters: [this.filters.filterDate],
+      },
+    ]
+  }, {
+    name: 'Hospitalization',
+    id: 'hospitalization-list',
+    description: 'This view shows the hospitalization stored in HealthAssistantBot',
+    types: [
+      {
+        name: 'list',
+        id: 'list',
+        filters: [this.filters.filterDate],
+      },
+    ]
   },
     
 
@@ -500,6 +522,12 @@ export class ProfileStatsComponent {
         break; 
       case 'medicalVisit-list':
         this.buildMedicalVisitDataSourceTable();
+        break;
+      case 'disease-list':
+        this.buildDiseaseDataSourceTable();
+        break;
+      case 'hospitalization-list':
+        this.buildHospitalizationDataSourceTable();
         break;
       default:
         this.customChart = null;
@@ -1451,6 +1479,30 @@ private buildMedicalVisitDataSourceTable(type?: string): Promise<Chart | any> {
   return this.statsService.getMedicalVisitTypeDataTelegramLine(this.filters.filterDate).then(
     (stats) => {    
       this.medicalVisit = stats;
+      
+    },
+    (err) => {
+      this.chartsLoading = false;
+    });
+}
+
+
+private buildDiseaseDataSourceTable(type?: string): Promise<Chart | any> {
+  return this.statsService.getDiseaseTypeDataTelegramLine(this.filters.filterDate).then(
+    (stats) => {    
+      this.disease = stats;
+      
+    },
+    (err) => {
+      this.chartsLoading = false;
+    });
+}
+
+
+private buildHospitalizationDataSourceTable(type?: string): Promise<Chart | any> {
+  return this.statsService.getHospitalizationTypeDataTelegramLine(this.filters.filterDate).then(
+    (stats) => {    
+      this.hospitalization = stats;
       
     },
     (err) => {

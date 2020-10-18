@@ -555,6 +555,46 @@
                     </div>
               </mat-card>
 
+              <mat-card *ngIf="selected.visualization && selected.visualization.id == 'disease-list' && disease && disease.length "
+                class="stats-card">
+                <div class="list-div" fxLayout>
+
+                  <div fxFlex="30">
+                    <p>DISEASE NAME</p>
+                  </div>
+
+                  <div fxFlex="30">
+                    <p>PLACE DIAGNOSY</p>
+                  </div>
+
+                  <div fxFlex="30">
+                    <p>COMPLETE DIAGNOSY</p>
+                  </div>
+          
+                  </div>
+                  
+                   
+                    <div class="list-div" fxLayout *ngFor="let di of disease">
+          
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ di.nameDisease }}</p>
+                      </div>
+
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ di.placeDiagnosis }}</p>
+                      </div>
+
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ di.completeDiagnosis }}</p>
+                      </div>
+        
+          
+                      <mat-divider></mat-divider>
+                    </div>
+              </mat-card>
+
+              
+
 
               
                 <!-- chart/map selected but no data available -->

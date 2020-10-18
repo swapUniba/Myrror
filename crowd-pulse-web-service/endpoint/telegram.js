@@ -963,7 +963,7 @@ var updateUserDisease = function(username) {
             for (let i = 0; i < res2.data.length; i++) {
               diseaseToSave.push({
                 username: username,
-                timestamp: res2.data.timestamp,
+                timestamp: res2.data[i].timestamp,
                 nameDisease: res2.data[i].nameDisease,
                 dateDiagnosis: res2.data[i].dateDiagnosis,
                 nameDoctor: res2.data[i].nameDoctor,
@@ -1048,7 +1048,7 @@ var updateUserHospitalization = function(username) {
             for (let i = 0; i < res2.data.length; i++) {
               hospitalizationToSave.push({
                 username: username,
-                timestamp: res2.data.timestamp,
+                timestamp: res2.data[i].timestamp,
                 name: res2.data[i].name,
                 start_date: res2.data[i].start_date, 
                 end_date: res2.data[i].end_date, 

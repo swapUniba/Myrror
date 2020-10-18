@@ -22,6 +22,8 @@ const API_STATS_DIAGNOSIS_BAR_DATA_SOURCE = 'api/stats/diagnosis_bar_data/source
 const API_STATS_ANALYSIS_LINE_DATA_SOURCE = 'api/stats/analysis_line_data/source';
 const API_STATS_THERAPY_TABLE_DATA_SOURCE = 'api/stats/therapy_table_data/source';
 const API_STATS_MEDICAL_VISIT_TABLE_DATA_SOURCE = 'api/stats/medicalVisit_table_data/source';
+const API_STATS_DISEASE_TABLE_DATA_SOURCE = 'api/stats/disease_table_data/source';
+const API_STATS_HOSPITALIZATION_TABLE_DATA_SOURCE = 'api/stats/hospitalization_table_data/source';
 
 
 const API_STATS_INTERESTS_WORD_CLOUD = 'api/stats/interests/wordcloud';
@@ -611,5 +613,37 @@ export class StatsService {
     return this.http.get(`${this.url}${API_STATS_MEDICAL_VISIT_TABLE_DATA_SOURCE}${params}`).toPromise();
   }
 
+
+  getDiseaseTypeDataTelegramLine(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
+    let params = `?db=${this.authService.getUserame()}&`;
+
+    if (!isNullOrUndefined(filter)) {
+
+      if (!isNullOrUndefined(filter.dateFrom)) {
+        params += 'from=' + filter.dateFrom.toISOString() + '&';
+      }
+
+      if (!isNullOrUndefined(filter.dateTo)) {
+        params += 'to=' + filter.dateTo.toISOString() + '&';
+      }
+    }
+    return this.http.get(`${this.url}${API_STATS_DISEASE_TABLE_DATA_SOURCE}${params}`).toPromise();
+  }
+
+  getHospitalizationTypeDataTelegramLine(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
+    let params = `?db=${this.authService.getUserame()}&`;
+
+    if (!isNullOrUndefined(filter)) {
+
+      if (!isNullOrUndefined(filter.dateFrom)) {
+        params += 'from=' + filter.dateFrom.toISOString() + '&';
+      }
+
+      if (!isNullOrUndefined(filter.dateTo)) {
+        params += 'to=' + filter.dateTo.toISOString() + '&';
+      }
+    }
+    return this.http.get(`${this.url}${API_STATS_HOSPITALIZATION_TABLE_DATA_SOURCE}${params}`).toPromise();
+  }
 
 }
