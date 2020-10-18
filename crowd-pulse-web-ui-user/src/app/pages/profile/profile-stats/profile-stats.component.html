@@ -509,14 +509,54 @@
                       </div>
                 </mat-card>
 
-                <!-- no charts -->
-                <mat-card *ngIf="!selected.visualization && !customChart
-                            && !chartsLoading && !gpsCoordinate
-                            && (!socialMessages || !socialMessages.length); else noData"
-                          class="stats-card">
-                  <p>Please select on the of the available visualizations from the left/above menu.</p>
-                </mat-card>
+                <mat-card *ngIf="selected.visualization && selected.visualization.id == 'medicalVisit-list' && medicalVisit && medicalVisit.length "
+                class="stats-card">
+                <div class="list-div" fxLayout>
 
+                  <div fxFlex="30">
+                    <p>MEDICAL VISIT NAME</p>
+                  </div>
+
+                  <div fxFlex="30">
+                    <p>NAME FACILITY</p>
+                  </div>
+
+                  <div fxFlex="30">
+                    <p>DIAGNOSIS</p>
+                  </div>
+          
+                  <div fxFlex="30">
+                    <p>MEDICAL PRESCRIPTION</p>
+                  </div>
+          
+                  </div>
+                  
+                   
+                    <div class="list-div" fxLayout *ngFor="let mv of medicalVisit">
+          
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ mv.nameVisit }}</p>
+                      </div>
+
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ mv.nameFacility }}</p>
+                      </div>
+
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ mv.diagnosis }}</p>
+                      </div>
+
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ mv.medicalPrescription }}</p>
+                      </div>
+        
+          
+                      <mat-divider></mat-divider>
+                    </div>
+              </mat-card>
+
+
+              
                 <!-- chart/map selected but no data available -->
 
 

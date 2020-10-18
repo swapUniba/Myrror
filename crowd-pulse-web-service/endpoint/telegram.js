@@ -662,7 +662,7 @@ var updateUserAnalysis = function(username) {
   });
 };
 /**
- * Update the user analysis information.
+ * Update the user therapy information.
  * @param username
  * 
  */
@@ -708,7 +708,7 @@ var updateUserTherapy = function(username) {
             for (let i = 0; i < res2.data.length; i++) {
               therapyToSave.push({
                 username: username,
-                timestamp: res2.data.timestamp,
+                timestamp: res2.data[i].timestamp,
                 therapyName: res2.data[i].therapyName,
                 dosage: res2.data[i].dosage,
                 start_date: res2.data[i].start_date,
@@ -872,7 +872,9 @@ var updateUserMedicalVisit = function(username) {
             for (let i = 0; i < res2.data.length; i++) {
               medicalVisitToSave.push({
                 username: username,
+                timestamp: res2.data[i].timestamp,
                 nameVisit: res2.data[i].nameVisit,
+                dateVisit: res2.data[i].dateVisit,
                 nameDoctor: res2.data[i].nameDoctor,
                 surnameDoctor: res2.data[i].surnameDoctor,
                 nameFacility: res2.data[i].nameFacility,
@@ -961,6 +963,7 @@ var updateUserDisease = function(username) {
             for (let i = 0; i < res2.data.length; i++) {
               diseaseToSave.push({
                 username: username,
+                timestamp: res2.data.timestamp,
                 nameDisease: res2.data[i].nameDisease,
                 dateDiagnosis: res2.data[i].dateDiagnosis,
                 nameDoctor: res2.data[i].nameDoctor,
@@ -1045,6 +1048,7 @@ var updateUserHospitalization = function(username) {
             for (let i = 0; i < res2.data.length; i++) {
               hospitalizationToSave.push({
                 username: username,
+                timestamp: res2.data.timestamp,
                 name: res2.data[i].name,
                 start_date: res2.data[i].start_date, 
                 end_date: res2.data[i].end_date, 

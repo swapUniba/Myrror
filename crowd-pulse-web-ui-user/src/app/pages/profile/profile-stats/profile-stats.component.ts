@@ -268,7 +268,19 @@ export class ProfileStatsComponent {
         filters: [this.filters.filterDate],
       },
     ]
+  }, {
+    name: 'Medical Visit',
+    id: 'medicalVisit-list',
+    description: 'This view shows the medical visits stored in HealthAssistantBot',
+    types: [
+      {
+        name: 'list',
+        id: 'list',
+        filters: [this.filters.filterDate],
+      },
+    ]
   },
+    
 
     // TODO add here new visualization
   ];
@@ -366,6 +378,21 @@ export class ProfileStatsComponent {
   * analysis array
   */
  analysis = [];
+
+ /**
+  * medical visit array
+  */
+ medicalVisit = [];
+
+  /**
+  * disease array
+  */
+ disease = [];
+
+  /**
+  * hospitalization array
+  */
+ hospitalization = [];
   
 
   constructor(
@@ -466,11 +493,14 @@ export class ProfileStatsComponent {
         this.buildTherapyDataSourceTable();
         break;
       case 'diagnosis-list':
-      this.buildDiagnosisDataSourceTable();
-      break;
+        this.buildDiagnosisDataSourceTable();
+        break;
       case 'analysis-list':
-      this.buildAnalysisDataSourceTable();
-      break;  
+        this.buildAnalysisDataSourceTable();
+        break; 
+      case 'medicalVisit-list':
+        this.buildMedicalVisitDataSourceTable();
+        break;
       default:
         this.customChart = null;
         this.chartsLoading = false;
@@ -1415,5 +1445,19 @@ private buildAnalysisDataSourceTable(type?: string): Promise<Chart | any> {
       this.chartsLoading = false;
     });
 }
+
+
+private buildMedicalVisitDataSourceTable(type?: string): Promise<Chart | any> {
+  return this.statsService.getMedicalVisitTypeDataTelegramLine(this.filters.filterDate).then(
+    (stats) => {    
+      this.medicalVisit = stats;
+      
+    },
+    (err) => {
+      this.chartsLoading = false;
+    });
+}
+
+
 
 }/** Fine **/

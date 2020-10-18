@@ -101,6 +101,7 @@ var PersonalDataSchema = builder(schemas.personalData, {
   diagnosis_name: String,
 //Medical Visit
   nameVisit: String,
+  dateVisit: String,
   nameDoctor: String,
   surnameDoctor: String,
   nameFacility: String,
@@ -328,17 +329,6 @@ PersonalDataSchema.statics.statMedicalVisitTableTypeDataTelegram = function (fro
   return Q
 };
 
-PersonalDataSchema.statics.statDiseaseTableTypeDataTelegram = function (from, to) {
-  var Q = this.aggregate(buildDiseaseTypeFilterQueryTelegramTable(from, to)).exec();
-
-  return Q
-};
-
-PersonalDataSchema.statics.statHospitalizationTableTypeDataTelegram = function (from, to) {
-  var Q = this.aggregate(buildHospitalizationTypeFilterQueryTelegramTable(from, to)).exec();
-
-  return Q
-};
 
 PersonalDataSchema.statics.statBodyTypeDataFitbit = function (from, to) {
   return Q(this.aggregate(buildBodyTypeFilterQueryFitbit(from, to)).exec());
@@ -935,7 +925,7 @@ var buildMedicalVisitTypeFilterQueryTelegramTable = function (from, to) {
       filter.$match['timestamp'] = {};
       if (hasFrom) {
         
-        filter.$match['timestamp']['$gte'] = from.getTime();
+        filter.$match['timestamp']['$gte'] =  from.getTime();
          
         
       }
@@ -964,92 +954,7 @@ var buildMedicalVisitTypeFilterQueryTelegramTable = function (from, to) {
 };
 
 
-var buildDiseaseTypeFilterQueryTelegramTable = function (from, to) {
-  var filter = undefined;
 
-  from = new Date(from);
-  to = new Date(to);
-  var hasFrom = !isNaN(from.getDate());
-  var hasTo = !isNaN(to.getDate());
-
-  if (hasFrom || hasTo) {
-    filter = {$match: {}};
-
-    if (hasFrom || hasTo) {
-      filter.$match['timestamp'] = {};
-      if (hasFrom) {
-        
-        filter.$match['timestamp']['$gte'] = from.getTime();
-         
-        
-      }
-      if (hasTo) {
-        
-        filter.$match['timestamp']['$lte'] = to.getTime();
-         
-        
-      }
-    }
-  } 
-
-  var aggregations = [];
-
-  if (filter) {
-    aggregations.push(filter);
-  }
-
-  aggregations.push({
-    $match: {
-      source: 'telegram-disease'
-    }
-  });
-
-  return aggregations;
-};
-
-
-var buildHospitalizationTypeFilterQueryTelegramTable = function (from, to) {
-  var filter = undefined;
-
-  from = new Date(from);
-  to = new Date(to);
-  var hasFrom = !isNaN(from.getDate());
-  var hasTo = !isNaN(to.getDate());
-
-  if (hasFrom || hasTo) {
-    filter = {$match: {}};
-
-    if (hasFrom || hasTo) {
-      filter.$match['timestamp'] = {};
-      if (hasFrom) {
-        
-        filter.$match['timestamp']['$gte'] = from.getTime();
-         
-        
-      }
-      if (hasTo) {
-        
-        filter.$match['timestamp']['$lte'] = to.getTime();
-         
-        
-      }
-    }
-  } 
-
-  var aggregations = [];
-
-  if (filter) {
-    aggregations.push(filter);
-  }
-
-  aggregations.push({
-    $match: {
-      source: 'telegram-hospitalization'
-    }
-  });
-
-  return aggregations;
-};
 
 
 
