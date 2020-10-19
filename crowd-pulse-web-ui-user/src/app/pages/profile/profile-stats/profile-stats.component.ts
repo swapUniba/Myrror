@@ -1476,7 +1476,7 @@ private buildAnalysisDataSourceTable(type?: string): Promise<Chart | any> {
 
 
 private buildMedicalVisitDataSourceTable(type?: string): Promise<Chart | any> {
-  return this.statsService.getMedicalVisitTypeDataTelegramLine(this.filters.filterDate).then(
+  return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filters.filterDate).then(
     (stats) => {    
       this.medicalVisit = stats;
       

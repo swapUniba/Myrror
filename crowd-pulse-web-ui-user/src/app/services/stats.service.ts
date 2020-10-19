@@ -597,7 +597,7 @@ export class StatsService {
   }
 
 
-  getMedicalVisitTypeDataTelegramLine(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
+  getMedicalVisitTypeDataTelegramTable(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
     let params = `?db=${this.authService.getUserame()}&`;
 
     if (!isNullOrUndefined(filter)) {

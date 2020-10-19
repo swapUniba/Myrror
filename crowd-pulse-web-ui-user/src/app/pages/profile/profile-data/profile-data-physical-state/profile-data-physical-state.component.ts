@@ -71,7 +71,16 @@ export class ProfileDataPhysicalStateComponent {
   },{
     id: 'ma',
     name: 'Medical Area',
-  },
+  },{
+    id: 'medicalVisit',
+    name:'Medical Visit',
+  },{
+    id: 'disease',
+    name:'Disease',
+  },{
+    id: 'hospitalization',
+    name:'Hospitalization',
+  }
 
   ];
 
@@ -79,6 +88,18 @@ export class ProfileDataPhysicalStateComponent {
   * therapy array
   */
   therapy: any;
+  /**
+  * medicalVisit array
+  */
+  medicalVisit: any;
+  /**
+  * disease array
+  */
+  disease: any;
+  /**
+  * hospitalization array
+  */
+  hospitalization: any;
 
   /**
    * Available behavior source.
@@ -116,8 +137,10 @@ export class ProfileDataPhysicalStateComponent {
    */
   selectedChart: {id: string, name: string};
 
-  showTable = false;
-
+  showTableTherapy = false;
+  showTableMedicalVisit = false;
+  showTableDisease = false;
+  showTableHospitalization = false;
   showMedicalArea = false;
 
   /**
@@ -182,7 +205,10 @@ export class ProfileDataPhysicalStateComponent {
 
       case 'sleep':
         this.showMedicalArea = false;
-        this.showTable = false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         this.showAnalysis= false;
         if (this.selectedChart.id == 'line') {
             this.buildSleepDataSourceChartLine(this.selectedChart.id).then((chart) => {
@@ -213,7 +239,10 @@ export class ProfileDataPhysicalStateComponent {
 
       case 'heart':
         this.showMedicalArea = false;
-        this.showTable = false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         this.showAnalysis= false;
         if (this.selectedChart.id == 'line') {
           this.buildHeartDataSourceChartLine(this.selectedChart.id).then((chart) => {
@@ -244,7 +273,10 @@ export class ProfileDataPhysicalStateComponent {
         break;
       case 'body':
         this.showMedicalArea = false;
-        this.showTable = false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         this.showAnalysis= false;
         if (this.selectedChart.id == 'line') {
           this.buildBodyDataSourceChartLineWeight(this.selectedChart.id).then((chart) => {
@@ -260,7 +292,10 @@ export class ProfileDataPhysicalStateComponent {
         break;
       case 'diagnosis':
         this.showMedicalArea = false;
-        this.showTable = false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         this.showAnalysis= false;
         if (this.selectedChart.id == 'bar'){
           this.buildDiagnosisDataSourceChartBar(this.selectedChart.id).then((chart) => {
@@ -271,7 +306,10 @@ export class ProfileDataPhysicalStateComponent {
 
       case 'analysis':
         this.showMedicalArea = false;
-        this.showTable = false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         this.showAnalysis= true;
         this.deleteAnalysisDuplicate();
         if(this.selectedChart.id == 'line'){
@@ -287,8 +325,38 @@ export class ProfileDataPhysicalStateComponent {
       case 'therapy':
         this.showMedicalArea = false;
         this.showAnalysis= false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         if(this.selectedChart.id == 'table'){
           this.buildTherapyDataSourceTable(this.selectedChart.id)
+          this.showTableTherapy = true;
+        }else{
+          this.showTableTherapy = false;
+        }
+
+        break;
+
+      case 'medicalVisit':
+      this.showMedicalArea = false;
+      this.showAnalysis= false;
+      this.showTableTherapy = false;
+      this.showTableDisease = false;
+      this.showTableHospitalization = false;
+      if(this.selectedChart.id == 'table'){
+        this.buildMedicalVisitDataSourceTable(this.selectedChart.id)
+        this.showTableMedicalVisit = true;
+      }else{
+        this.showTableMedicalVisit = false;
+      }
+
+      break;
+/*
+      case 'disease':
+        this.showMedicalArea = false;
+        this.showAnalysis= false;
+        if(this.selectedChart.id == 'table'){
+          this.buildDiseaseDataSourceTable(this.selectedChart.id)
           this.showTable = true;
         }else{
           this.showTable = false;
@@ -296,8 +364,23 @@ export class ProfileDataPhysicalStateComponent {
 
         break;
 
+      case 'therapy':
+        this.showMedicalArea = false;
+        this.showAnalysis= false;
+        if(this.selectedChart.id == 'table'){
+          this.buildTherapyDataSourceTable(this.selectedChart.id)
+          this.showTable = true;
+        }else{
+          this.showTable = false;
+        }
+
+        break;  
+        */
       case 'ma':
-        this.showTable = false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         this.showAnalysis= false;
         if(this.selectedChart.id == 'table'){
           this.showMedicalArea = true;
@@ -308,7 +391,10 @@ export class ProfileDataPhysicalStateComponent {
         break;
 
       default:
-        this.showTable = false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
+        this.showTableHospitalization = false;
         this.customChart = null;
         this.showMedicalArea = false;
         break;
@@ -1680,7 +1766,16 @@ export class ProfileDataPhysicalStateComponent {
       });
   }
 
-
+  private buildMedicalVisitDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filter).then(
+      (stats) => {    
+        this.medicalVisit = stats;
+        
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
 
 }
 

@@ -102,7 +102,7 @@
         <div [chart]="customChart"></div>
       </mat-card>
 
-      <mat-card *ngIf="showTable== true" class="stats-card">
+      <mat-card *ngIf="showTableTherapy== true" class="stats-card">
 
         <div class="list-div" fxLayout>
 
@@ -162,6 +162,52 @@
             </div>
         </mat-card>
       
+
+          <!--show table for medicalVisit-->
+          <mat-card *ngIf="showTableMedicalVisit== true" class="stats-card">
+
+            <div class="list-div" fxLayout>
+
+            <div fxFlex="30">
+              <p>MEDICAL VISIT NAME</p>
+            </div>
+
+            <div fxFlex="30">
+              <p>NAME FACILITY</p>
+            </div>
+
+            <div fxFlex="30">
+              <p>DIAGNOSIS</p>
+            </div>
+            <div fxFlex="30">
+              <p>MEDICAL PRESCRIPTION</p>
+            </div>
+            
+            </div>
+            
+            
+              <div class="list-div" fxLayout *ngFor="let mv of medicalVisit">
+
+                <div fxFlex="30">
+                  <p class="table-card">{{ mv.nameVisit }}</p>
+                </div>
+
+                <div  fxFlex="30">
+                  <p class="table-card">{{ mv.nameFacility}}</p>
+                </div>
+
+                <div fxFlex="30">
+                  <p class="table-card" >{{ mv.diagnosis }}</p>
+                </div>
+
+                <div fxFlex="30">
+                  <p class="table-card" >{{ mv.medicalPrescription }}</p>
+                </div>
+
+                <mat-divider></mat-divider>
+              </div>
+            </mat-card>
+
     </div>
 
     
