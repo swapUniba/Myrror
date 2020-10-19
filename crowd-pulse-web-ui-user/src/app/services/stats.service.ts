@@ -614,7 +614,7 @@ export class StatsService {
   }
 
 
-  getDiseaseTypeDataTelegramLine(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
+  getDiseaseTypeDataTelegramTable(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
     let params = `?db=${this.authService.getUserame()}&`;
 
     if (!isNullOrUndefined(filter)) {
@@ -630,7 +630,7 @@ export class StatsService {
     return this.http.get(`${this.url}${API_STATS_DISEASE_TABLE_DATA_SOURCE}${params}`).toPromise();
   }
 
-  getHospitalizationTypeDataTelegramLine(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
+  getHospitalizationTypeDataTelegramTable(filter?: {dateFrom?: Date, dateTo?: Date}): Promise<any> {
     let params = `?db=${this.authService.getUserame()}&`;
 
     if (!isNullOrUndefined(filter)) {

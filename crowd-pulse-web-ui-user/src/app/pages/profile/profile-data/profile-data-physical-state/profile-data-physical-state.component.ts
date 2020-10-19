@@ -351,31 +351,37 @@ export class ProfileDataPhysicalStateComponent {
       }
 
       break;
-/*
+
       case 'disease':
         this.showMedicalArea = false;
         this.showAnalysis= false;
+        this.showTableTherapy = false;
+        this.showTableHospitalization = false;
+        this.showTableMedicalVisit = false;
         if(this.selectedChart.id == 'table'){
           this.buildDiseaseDataSourceTable(this.selectedChart.id)
-          this.showTable = true;
+          this.showTableDisease = true;
         }else{
-          this.showTable = false;
+          this.showTableDisease = false;
         }
 
         break;
 
-      case 'therapy':
+      case 'hospitalization':
         this.showMedicalArea = false;
         this.showAnalysis= false;
+        this.showTableTherapy = false;
+        this.showTableMedicalVisit = false;
+        this.showTableDisease = false;
         if(this.selectedChart.id == 'table'){
-          this.buildTherapyDataSourceTable(this.selectedChart.id)
-          this.showTable = true;
+          this.buildHospitalizationDataSourceTable(this.selectedChart.id)
+          this.showTableHospitalization = true;
         }else{
-          this.showTable = false;
+          this.showTableHospitalization = false;
         }
 
         break;  
-        */
+        
       case 'ma':
         this.showTableTherapy = false;
         this.showTableMedicalVisit = false;
@@ -1770,6 +1776,30 @@ export class ProfileDataPhysicalStateComponent {
     return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filter).then(
       (stats) => {    
         this.medicalVisit = stats;
+        
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
+
+
+  private buildDiseaseDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getDiseaseTypeDataTelegramTable(this.filter).then(
+      (stats) => {    
+        this.disease = stats;
+        
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
+
+
+  private buildHospitalizationDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getHospitalizationTypeDataTelegramTable(this.filter).then(
+      (stats) => {    
+        this.hospitalization = stats;
         
       },
       (err) => {
