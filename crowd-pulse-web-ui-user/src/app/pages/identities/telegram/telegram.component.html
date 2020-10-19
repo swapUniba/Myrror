@@ -278,7 +278,7 @@
             <div class="post-like-div" *ngFor="let h of hospitalization">
               <p>Name Hospitalization: {{ h.name }}</p>
               <p>Hospital Ward: {{ h.hospitalWard }}</p>
-              <p>Medical Prescription: {{ h.medicalPrescription }}</p>
+              <p>Diagnosis: {{ h.diagnosisHospitalization }}</p>
               <mat-divider></mat-divider>
             </div>          
             <button mat-raised-button color="primary" (click)="updateHospitalization(true, 5)">

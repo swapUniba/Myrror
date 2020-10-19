@@ -593,7 +593,45 @@
                     </div>
               </mat-card>
 
-              
+
+
+              <mat-card *ngIf="selected.visualization && selected.visualization.id == 'hospitalization-list' && hospitalization && hospitalization.length "
+                class="stats-card">
+                <div class="list-div" fxLayout>
+
+                  <div fxFlex="30">
+                    <p>HOSPITALIZATION NAME</p>
+                  </div>
+
+                  <div fxFlex="30">
+                    <p>HOSPITAL WARD</p>
+                  </div>
+
+                  <div fxFlex="30">
+                    <p>DIAGNOSIS</p>
+                  </div>
+          
+                  </div>
+                  
+                   
+                    <div class="list-div" fxLayout *ngFor="let h of hospitalization">
+          
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ h.name }}</p>
+                      </div>
+
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ h.hospitalWard }}</p>
+                      </div>
+
+                      <div fxFlex="30">
+                        <p class="stats-ma">{{ h.diagnosisHospitalization }}</p>
+                      </div>
+        
+          
+                      <mat-divider></mat-divider>
+                    </div>
+              </mat-card>
 
 
               
