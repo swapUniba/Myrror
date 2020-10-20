@@ -139,7 +139,14 @@ module.exports = function() {
                         heart: {},
                         sleep: {},
                         food: {},
-                        body: {}
+                        body: {},
+                        diagnosis: {},
+                        analysis: {},
+                        therapies: {},
+                        medicalAreas: {},
+                        medicalVisits: {},
+                        diseases: {},
+                        hospitalizations: {}
                     }, // From PersonalData, heart-rate, sleep, food and body
                     socialRelations: {} // From Connection collection
                 };
@@ -460,6 +467,170 @@ module.exports = function() {
                                                 }, function (err, profile) {
                                                     if (profile) {
                                                         myData.physicalStates.body = profile;
+                                                    }
+                                                }).limit(parseInt(l));
+                                            })
+                                    })
+                                    // TAKE DIAGNOSIS VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, myData.user)
+                                            .then(function (connection) {
+                                                return connection.PersonalData.find({
+                                                    source: /telegram-diagnosis/,
+                                                    timestamp: {$gte: minDate.getTime()/1000, $lte: maxDate.getTime()/1000}
+                                                }, {
+                                                    _id: 0,
+                                                    timestamp: 1,
+                                                    diagnosis_name: 1,
+                                                    diagnosis_accuracy: 1
+                                                }, function (err, profile) {
+                                                    if (profile) {
+                                                        myData.physicalStates.diagnosis = profile;
+                                                    }
+                                                }).limit(parseInt(l));
+                                            })
+                                    })
+                                    // TAKE ANALYSIS VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, myData.user)
+                                            .then(function (connection) {
+                                                return connection.PersonalData.find({
+                                                    source: /telegram-analysis/,
+                                                    timestamp: {$gte: minDate.getTime()/1000, $lte: maxDate.getTime()/1000}
+                                                }, {
+                                                    _id: 0,
+                                                    timestamp: 1,
+                                                    analysisName: 1,
+                                                    min: 1,
+                                                    max: 1,
+                                                    result: 1,
+                                                    unit: 1,
+                                                    acronym: 1,
+                                                }, function (err, profile) {
+                                                    if (profile) {
+                                                        myData.physicalStates.analysis = profile;
+                                                    }
+                                                }).limit(parseInt(l));
+                                            })
+                                    })
+                                    // TAKE THERAPIES VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, myData.user)
+                                            .then(function (connection) {
+                                                return connection.PersonalData.find({
+                                                    source: /telegram-therapy/,
+                                                    timestamp: {$gte: minDate.getTime()/1000, $lte: maxDate.getTime()/1000}
+                                                }, {
+                                                    _id: 0,
+                                                    timestamp: 1,
+                                                    therapyName: 1, 
+                                                    dosage: 1,
+                                                    start_date: 1,
+                                                    end_date: 1,
+                                                    type: 1,
+                                                    drug_name: 1,
+                                                    inteval_days: 1,
+                                                    day: 1,
+                                                    hour: 1,
+                                                }, function (err, profile) {
+                                                    if (profile) {
+                                                        myData.physicalStates.therapies = profile;
+                                                    }
+                                                }).limit(parseInt(l));
+                                            })
+                                    })
+                                    // TAKE MEDICAL AREAS VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, myData.user)
+                                            .then(function (connection) {
+                                                return connection.PersonalData.find({
+                                                    source: /telegram-medicalArea/,
+                                                }, {
+                                                    _id: 0,
+                                                    medicalArea: 1
+                                                }, function (err, profile) {
+                                                    if (profile) {
+                                                        myData.physicalStates.medicalAreas = profile;
+                                                    }
+                                                }).limit(parseInt(l));
+                                            })
+                                    })
+                                    // TAKE MEDICAL VISITS VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, myData.user)
+                                            .then(function (connection) {
+                                                return connection.PersonalData.find({
+                                                    source: /telegram-medicalVisit/,
+                                                    timestamp: {$gte: minDate.getTime()/1000, $lte: maxDate.getTime()/1000}
+                                                }, {
+                                                    _id: 0,
+                                                    timestamp: 1,
+                                                    nameVisit: 1,
+                                                    dateVisit: 1,
+                                                    nameDoctor: 1,
+                                                    surnameDoctor: 1,
+                                                    nameFacility: 1,
+                                                    cityFacility: 1,
+                                                    addressFacility: 1,
+                                                    descriptionFacility: 1,
+                                                    typeFacility: 1,
+                                                    typology: 1,
+                                                    diagnosis: 1,
+                                                    medicalPrescription: 1,
+                                                    notePatient: 1
+                                                }, function (err, profile) {
+                                                    if (profile) {
+                                                        myData.physicalStates.medicalVisits = profile;
+                                                    }
+                                                }).limit(parseInt(l));
+                                            })
+                                    })
+                                    // TAKE DISEASES VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, myData.user)
+                                            .then(function (connection) {
+                                                return connection.PersonalData.find({
+                                                    source: /telegram-disease/,
+                                                    timestamp: {$gte: minDate.getTime()/1000, $lte: maxDate.getTime()/1000}
+                                                }, {
+                                                    _id: 0,
+                                                    timestamp: 1,
+                                                    nameDisease: 1,
+                                                    dateDiagnosis: 1,
+                                                    nameDoctor: 1,
+                                                    surnameDoctor: 1,
+                                                    placeDiagnosis: 1,
+                                                    completeDiagnosis: 1,
+                                                    note: 1,
+                                                }, function (err, profile) {
+                                                    if (profile) {
+                                                        myData.physicalStates.diseases = profile;
+                                                    }
+                                                }).limit(parseInt(l));
+                                            })
+                                    })
+                                    // TAKE HOSPITALIZATIONS VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, myData.user)
+                                            .then(function (connection) {
+                                                return connection.PersonalData.find({
+                                                    source: /telegram-hospitalization/,
+                                                    timestamp: {$gte: minDate.getTime()/1000, $lte: maxDate.getTime()/1000}
+                                                }, {
+                                                    _id: 0,
+                                                    timestamp: 1,
+                                                    name: 1,
+                                                    start_date: 1, 
+                                                    end_date: 1, 
+                                                    nameDoctor: 1,
+                                                    surnameDoctor: 1,
+                                                    hospitalWard: 1,
+                                                    diagnosisHospitalization:1,
+                                                    medicalPrescription: 1,
+                                                    note: 1
+                                                }, function (err, profile) {
+                                                    if (profile) {
+                                                        myData.physicalStates.hospitalizations = profile;
                                                     }
                                                 }).limit(parseInt(l));
                                             })
