@@ -469,13 +469,15 @@ var updateUserProfile = function(username, userData) {
             profile.identities.telegram.birth = userData.birth
           }
 
-          if(userData.city){
-            profile.identities.telegram.city = userData.city
+          if(userData.birthCity){
+            profile.identities.telegram.birthCity = userData.birthCity
           }
           if(userData.province){
             profile.identities.telegram.province = userData.province
           }
-
+          if(userData.fiscalCode){
+            profile.identities.telegram.fiscalCode = userData.fiscalCode
+          }
 
           profile.save().then(function () {
             console.log("Telegram profile of " + username + " updated at " + new Date());

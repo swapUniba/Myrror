@@ -686,14 +686,18 @@ export class TelegramComponent implements OnInit {
       telegramProfile.push({dataName: 'birth', dataValue: telegram['birth']});
     }
 
-    if (telegram['city'] && telegram['city'] !== '') {
-      telegramProfile.push({dataName: 'city', dataValue: telegram['city']});
+    if (telegram['birthCity'] && telegram['birthCity'] !== '') {
+      telegramProfile.push({dataName: 'birth city', dataValue: telegram['birthCity']});
     }
 
     if (telegram['province'] && telegram['province'] !== '') {
       telegramProfile.push({dataName: 'province', dataValue: telegram['province']});
     }
-    
+
+    if (telegram['fiscalCode'] && telegram['fiscalCode'] !== '') {
+      telegramProfile.push({dataName: 'fiscal Code', dataValue: telegram['fiscalCode']});
+    }
+
     this.dataSource = new MatTableDataSource(telegramProfile);
   }
 

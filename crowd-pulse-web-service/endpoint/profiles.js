@@ -3,6 +3,7 @@
 var qSend = require('../lib/expressQ').send;
 var qErr = require('../lib/expressQ').error;
 var router = require('express').Router();
+const { firstName } = require('../crowd-pulse-data/schema/linkedinProfile');
 var CrowdPulse = require('./../crowd-pulse-data');
 var config = require('./../lib/config');
 
@@ -135,6 +136,7 @@ module.exports = function() {
                         empathies: {}
                     }, // From Profile.personalities and Profile.empathies collection
                     interests: {}, // From Interest collection
+                    telegramProfile: {},
                     physicalStates: {
                         heart: {},
                         sleep: {},
@@ -470,6 +472,19 @@ module.exports = function() {
                                                     }
                                                 }).limit(parseInt(l));
                                             })
+                                    })
+                                    // TAKE TELEGRAM VALUES
+                                    .then(function () {
+                                        return dbConn.connect(config.database.url, DB_PROFILES)
+                                        .then(function (conn) {
+                                            return conn.Profile.findOne({username: req.params.username}, function (err, user) {
+                                                if (user) {
+                                                                myData.telegramProfile = user.identities.telegram;
+                                                }
+                                                    dbConn.disconnect();
+                                                
+                                            })
+                                    })
                                     })
                                     // TAKE DIAGNOSIS VALUES
                                     .then(function () {
