@@ -513,7 +513,7 @@ var updateDemographicsForUser = function (username) {
           }
         }
 
-
+/*
         if (fitbitIdentity.dateOfBirth) {
           var dateOfBirth = {
             value: fitbitIdentity.dateOfBirth,
@@ -525,7 +525,7 @@ var updateDemographicsForUser = function (username) {
             user.demographics.dateOfBirth = [dateOfBirth];
           }
         }
-
+*/
         if (fitbitIdentity.country) {
           var country = {
             value: fitbitIdentity.country,
