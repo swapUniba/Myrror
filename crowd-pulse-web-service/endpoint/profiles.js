@@ -298,13 +298,13 @@ module.exports = function() {
                                 return dbConn.connect(config.database.url, myData.user)
                                     .then(function (connection) {
                                         return connection.Message.find({
-                                            date: {$gte: minDate, $lte: maxDate}
+                                            date: {$gte: minDate, $lte: maxDate},
+                                            latitude: {$ne: null},
+                                            longitude: {$ne: null}
                                         }, {
                                             _id: 0,
-                                            text: 1,
                                             latitude: 1,
-                                            longitude: 1,
-                                            date: 1
+                                            longitude: 1
                                         }, function (err, profile) {
                                             if (profile) {
                                                 myData.behaviors.fromText = profile;

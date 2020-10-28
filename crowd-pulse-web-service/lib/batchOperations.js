@@ -253,7 +253,7 @@ var updateDemographicsForUser = function (username) {
         var twitterIdentity = user.identities.twitter;
         var linkedInIdentity = user.identities.linkedIn;
         var mobileDevices = user.identities.devices;
-        // var fitBitIdentity = user.identities.fitBit;
+        var fitbitIdentity = user.identities.fitbit;
 
         // save name
         if (linkedInIdentity.firstName && linkedInIdentity.lastName) {
@@ -271,6 +271,11 @@ var updateDemographicsForUser = function (username) {
         } else if (twitterIdentity.name) {
           user.demographics.name.value = twitterIdentity.name;
           user.demographics.name.source = 'twitter';
+
+        } else if (fitbitIdentity.fullName) {
+          user.demographics.name.value = fitbitIdentity.fullName;
+          user.demographics.name.source = 'fitbit';
+          
         }
 
         // save location
@@ -480,10 +485,58 @@ var updateDemographicsForUser = function (username) {
           }
         }
 
-        // TODO save height
-        // TODO save weight
-        // TODO save dateOfBirth
-        // TODO save country
+        if (fitbitIdentity.height) {
+          var height = {
+            value: fitbitIdentity.height,
+            source: 'fitbit',
+            timestamp: timestamp,
+            confidence: 1
+          };
+          if (user.demographics.height.length > 0) {
+            user.demographics.height.push(height);
+          } else {
+            user.demographics.height = [height];
+          }
+        }
+        
+        if (fitbitIdentity.weight) {
+          var weight = {
+            value: fitbitIdentity.weight,
+            source: 'fitbit',
+            timestamp: timestamp,
+            confidence: 1
+          };
+          if (user.demographics.weight.length > 0) {
+            user.demographics.weight.push(weight);
+          } else {
+            user.demographics.weight = [weight];
+          }
+        }
+
+
+        if (fitbitIdentity.dateOfBirth) {
+          var dateOfBirth = {
+            value: fitbitIdentity.dateOfBirth,
+            source: 'fitbit'
+          };
+          if (user.demographics.dateOfBirth.length > 0) {
+            user.demographics.dateOfBirth.push(dateOfBirth);
+          } else {
+            user.demographics.dateOfBirth = [dateOfBirth];
+          }
+        }
+
+        if (fitbitIdentity.country) {
+          var country = {
+            value: fitbitIdentity.country,
+            source: 'fitbit',
+          };
+          if (user.demographics.country.length > 0) {
+            user.demographics.country.push(country);
+          } else {
+            user.demographics.country = [country];
+          }
+        }
 
         // save device
         if (mobileDevices.length) {
