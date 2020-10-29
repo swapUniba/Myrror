@@ -426,15 +426,6 @@ var updateDemographicsForUser = function (username) {
           user.demographics.email = newEmailArray;
         }
 
-
-        // save gender
-        if (facebookIdentity.gender) {
-          user.demographics.gender.value = facebookIdentity.gender;
-          user.demographics.gender.source = 'facebook';
-          user.demographics.gender.timestamp = timestamp;
-          user.demographics.gender.confidence = 1;
-        }
-
         // save language
         if (facebookIdentity.language) {
           var languages = [];
@@ -468,7 +459,20 @@ var updateDemographicsForUser = function (username) {
           }
         }
 
-        // TODO save work (actually not retrieved from linkedIn)
+        // save work
+        if (linkedInIdentity.headline) {
+          var work = {
+            value: linkedInIdentity.headline,
+            source: 'linkedin',
+            timestamp: timestamp,
+            confidence: 1
+          };
+          if (user.demographics.work.length > 0) {
+            user.demographics.work.push(work);
+          } else {
+            user.demographics.work = [work];
+          }
+        }
 
         // save industry
         if (linkedInIdentity.industry) {
@@ -513,7 +517,21 @@ var updateDemographicsForUser = function (username) {
           }
         }
 
-/*
+        if (twitterIdentity.location) {
+          var country = {
+            value: twitterIdentity.location,
+            source: 'twitter',
+            confidence: 1,
+            timestamp: 1
+          };
+          if (user.demographics.country.length > 0) {
+            user.demographics.country.push(country);
+          } else {
+            user.demographics.country = [country];
+          }
+        }
+
+
         if (fitbitIdentity.dateOfBirth) {
           var dateOfBirth = {
             value: fitbitIdentity.dateOfBirth,
@@ -525,18 +543,21 @@ var updateDemographicsForUser = function (username) {
             user.demographics.dateOfBirth = [dateOfBirth];
           }
         }
-*/
-        if (fitbitIdentity.country) {
-          var country = {
-            value: fitbitIdentity.country,
+
+        if (fitbitIdentity.gender) {
+          var gender = {
+            value: fitbitIdentity.gender,
             source: 'fitbit',
+            timestamp: 1,
+            confidence:1
           };
-          if (user.demographics.country.length > 0) {
-            user.demographics.country.push(country);
+          if (user.demographics.gender.length > 0) {
+            user.demographics.gender.push(gender);
           } else {
-            user.demographics.country = [country];
+            user.demographics.gender = [gender];
           }
         }
+
 
         // save device
         if (mobileDevices.length) {
