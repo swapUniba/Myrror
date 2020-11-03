@@ -39,6 +39,12 @@ export class TelegramComponent implements OnInit {
 
   loadingMedicalArea = false;
 
+  loadingMedicalVisit = false;
+
+  loadingDisease = false;
+
+  loadingHospitalization = false;
+
 
 
 
@@ -58,9 +64,26 @@ export class TelegramComponent implements OnInit {
   shareAnalysis: boolean;
 
   /**
-   * Share Analysis.
+   * Share Medical Area.
    */
   shareMedicalArea: boolean;
+
+  /**
+   * Share Medical Visit.
+   */
+  shareMedicalVisit: boolean;
+
+  /**
+   * Share Disease.
+   */
+  shareDisease: boolean;
+
+  /**
+   * Share Hospitalization.
+   */
+  shareHospitalization: boolean;
+
+  
   
   /**
    * Application name.
@@ -86,9 +109,24 @@ export class TelegramComponent implements OnInit {
    */
   medicalArea: any[] = [];
 
+  /**
+   * Medical Visit array
+   */
+  medicalVisit: any[] = [];
 
   /**
-   * Telgram username
+   * Disease array
+   */
+  disease: any[] = [];
+
+  /**
+   * Hospedalization array
+   */
+  hospitalization: any[] = [];
+
+
+  /**
+   * Telegram username
    */
   telegramUsername: string = "";
 
@@ -117,6 +155,9 @@ export class TelegramComponent implements OnInit {
               this.updateDiagnoses(false, 5);
               this.updateAnalyses(false, 5);
               this.updateTherapies(false, 5);
+              this.updateMedicalVisit(false, 5);
+              this.updateDisease(false, 5);
+              this.updateHospitalization(false, 5);
               
 
 
@@ -136,7 +177,20 @@ export class TelegramComponent implements OnInit {
               if(this.shareTherapy == true){
                 this.updateTherapies();
               }
+              this.shareMedicalVisit = user.identities.configs.telegramConfig.shareMedicalVisit;
+              if(this.shareMedicalVisit == true){
+                this.updateMedicalVisit();
+              }
+              this.shareDisease = user.identities.configs.telegramConfig.shareDisease;
+              if(this.shareDisease == true){
+                this.updateDisease();
+              }
+              this.shareHospitalization = user.identities.configs.telegramConfig.shareHospitalization;
+              if(this.shareHospitalization == true){
+                this.updateHospitalization();
+              }
 
+        
                // clean the URL
         window.history.replaceState(null, null, window.location.pathname);
       }
@@ -206,8 +260,8 @@ export class TelegramComponent implements OnInit {
     });
 
   }
-  updateShareDiagnosis(){
-    this.telegramService.configuration({shareDiagnosis: this.shareDiagnosis}).subscribe((res) => {
+  updateShareMedicalVisit(){
+    this.telegramService.configuration({shareMedicalVisit: this.shareMedicalVisit}).subscribe((res) => {
       if (res && res.auth) {
         this.toast.success('Configuration updated');
       } else {
@@ -215,6 +269,24 @@ export class TelegramComponent implements OnInit {
       }
     });
 
+  }
+  updateShareDisease(){
+    this.telegramService.configuration({shareDisease: this.shareDisease}).subscribe((res) => {
+      if (res && res.auth) {
+        this.toast.success('Configuration updated');
+      } else {
+        this.toast.error('An error occurred');
+      }
+    });
+  }
+  updateShareHospitalization(){
+    this.telegramService.configuration({shareHospitalization: this.shareHospitalization}).subscribe((res) => {
+      if (res && res.auth) {
+        this.toast.success('Configuration updated');
+      } else {
+        this.toast.error('An error occurred');
+      }
+    });
   }
 
   deleteAccount() {
@@ -387,7 +459,7 @@ export class TelegramComponent implements OnInit {
   }
 
   updateMedicalArea(showToast?: boolean, medicalAreanumber?: Number )  {
-    if (this.shareTherapy == true){
+    if (this.shareMedicalArea == true){
 
     
     this.loadingMedicalArea= true;
@@ -434,6 +506,153 @@ export class TelegramComponent implements OnInit {
     }
   }
 
+
+  updateMedicalVisit(showToast?: boolean, medicalVisitnumber?: Number )  {
+    if (this.shareMedicalVisit == true){
+
+    
+    this.loadingMedicalVisit= true;
+    this.telegramService.userMedicalVisit(medicalVisitnumber).subscribe(
+      (res) => {
+        this.loadingMedicalVisit = false;
+        if (res) {
+          if (showToast) {
+            this.toast.success('Medical Visit Updated');
+          }
+          if (res.medicalVisit && res.medicalVisit.length > 0) {
+            this.medicalVisit = res.medicalVisit;
+
+          } 
+        } else {
+          if (showToast) {
+            this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+          }
+        }
+      },
+      (err) => {
+        this.loadingMedicalVisit = false;
+      });
+    } else {
+      if (showToast){
+      this.toast.error("Medical Visit update not allowed")
+      } else {
+
+        this.telegramService.userMedicalVisit(medicalVisitnumber).subscribe(
+          (res) => {
+            this.loadingMedicalVisit = false;
+            if (res) {
+              if (res.medicalVisit && res.medicalVisit.length > 0) {
+                this.medicalVisit = res.medicalVisit;
+    
+              } 
+            }
+          },
+          (err) => {
+            this.loadingMedicalVisit = false;
+          });
+
+      }
+    }
+  }
+
+
+  updateDisease(showToast?: boolean, diseasenumber?: Number )  {
+    if (this.shareDisease == true){
+
+    
+    this.loadingDisease= true;
+    this.telegramService.userDisease(diseasenumber).subscribe(
+      (res) => {
+        this.loadingDisease = false;
+        if (res) {
+          if (showToast) {
+            this.toast.success('Disease Updated');
+          }
+          if (res.disease && res.disease.length > 0) {
+            this.disease = res.disease;
+
+          } 
+        } else {
+          if (showToast) {
+            this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+          }
+        }
+      },
+      (err) => {
+        this.loadingDisease = false;
+      });
+    } else {
+      if (showToast){
+      this.toast.error("Disease update not allowed")
+      } else {
+
+        this.telegramService.userDisease(diseasenumber).subscribe(
+          (res) => {
+            this.loadingDisease = false;
+            if (res) {
+              if (res.disease && res.disease.length > 0) {
+                this.disease = res.disease;
+    
+              } 
+            }
+          },
+          (err) => {
+            this.loadingDisease = false;
+          });
+
+      }
+    }
+  }
+
+
+  updateHospitalization(showToast?: boolean, hospitalizationnumber?: Number )  {
+    if (this.shareHospitalization == true){
+
+    
+    this.loadingHospitalization= true;
+    this.telegramService.userHospitalization(hospitalizationnumber).subscribe(
+      (res) => {
+        this.loadingHospitalization = false;
+        if (res) {
+          if (showToast) {
+            this.toast.success('Hospitalization Updated');
+          }
+          if (res.hospitalization && res.hospitalization.length > 0) {
+            this.hospitalization = res.hospitalization;
+
+          } 
+        } else {
+          if (showToast) {
+            this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+          }
+        }
+      },
+      (err) => {
+        this.loadingHospitalization = false;
+      });
+    } else {
+      if (showToast){
+      this.toast.error("Hospitalization update not allowed")
+      } else {
+
+        this.telegramService.userHospitalization(hospitalizationnumber).subscribe(
+          (res) => {
+            this.loadingHospitalization = false;
+            if (res) {
+              if (res.hospitalization && res.hospitalization.length > 0) {
+                this.hospitalization = res.hospitalization;
+    
+              } 
+            }
+          },
+          (err) => {
+            this.loadingHospitalization = false;
+          });
+
+      }
+    }
+  }
+
   private setupTelegramProfileTable() {
 
     // user telegram data
@@ -467,14 +686,18 @@ export class TelegramComponent implements OnInit {
       telegramProfile.push({dataName: 'birth', dataValue: telegram['birth']});
     }
 
-    if (telegram['city'] && telegram['city'] !== '') {
-      telegramProfile.push({dataName: 'city', dataValue: telegram['city']});
+    if (telegram['birthCity'] && telegram['birthCity'] !== '') {
+      telegramProfile.push({dataName: 'birth city', dataValue: telegram['birthCity']});
     }
 
     if (telegram['province'] && telegram['province'] !== '') {
       telegramProfile.push({dataName: 'province', dataValue: telegram['province']});
     }
-    
+
+    if (telegram['fiscalCode'] && telegram['fiscalCode'] !== '') {
+      telegramProfile.push({dataName: 'fiscal Code', dataValue: telegram['fiscalCode']});
+    }
+
     this.dataSource = new MatTableDataSource(telegramProfile);
   }
 

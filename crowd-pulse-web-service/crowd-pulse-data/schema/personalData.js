@@ -97,6 +97,40 @@ var PersonalDataSchema = builder(schemas.personalData, {
   hour: String,
   //Medical Area**
   medicalArea: String,
+  //Diagnosis
+  diagnosis_name: String,
+//Medical Visit
+  nameVisit: String,
+  dateVisit: String,
+  nameDoctor: String,
+  surnameDoctor: String,
+  nameFacility: String,
+  cityFacility: String,
+  addressFacility: String,
+  descriptionFacility: String,
+  typeFacility: String,
+  typology: String,
+  diagnosis: String,
+  medicalPrescription: String,
+  notePatient: String,
+//Disease
+  nameDisease: String,
+  dateDiagnosis: String,
+  nameDoctor: String,
+  surnameDoctor: String,
+  placeDiagnosis: String,
+  completeDiagnosis: String,
+  note: String,
+//Hospitalizazion
+  name: String,
+  start_date: String, 
+  end_date: String , 
+  nameDoctor: String,
+  surnameDoctor: String,
+  hospitalWard: String,
+  diagnosisHospitalization:String,
+  medicalPrescription: String,
+  note: String
 
 
 
@@ -288,6 +322,26 @@ PersonalDataSchema.statics.statTherapyTableTypeDataTelegram = function (from, to
 
   return Q
 };
+
+PersonalDataSchema.statics.statMedicalVisitTableTypeDataTelegram = function (from, to) {
+  var Q = this.aggregate(buildMedicalVisitTypeFilterQueryTelegramTable(from, to)).exec();
+
+  return Q
+};
+
+PersonalDataSchema.statics.statDiseaseTableTypeDataTelegram = function (from, to) {
+  var Q = this.aggregate(buildDiseaseTypeFilterQueryTelegramTable(from, to)).exec();
+
+  return Q
+};
+
+
+PersonalDataSchema.statics.statHospitalizationTableTypeDataTelegram = function (from, to) {
+  var Q = this.aggregate(buildHospitalizationTypeFilterQueryTelegramTable(from, to)).exec();
+
+  return Q
+};
+
 
 
 PersonalDataSchema.statics.statBodyTypeDataFitbit = function (from, to) {
@@ -868,6 +922,139 @@ var buildTherapyTypeFilterQueryTelegramTable = function (from, to) {
 
   return aggregations;
 };
+
+
+var buildMedicalVisitTypeFilterQueryTelegramTable = function (from, to) {
+  var filter = undefined;
+
+  from = new Date(from);
+  to = new Date(to);
+  var hasFrom = !isNaN(from.getDate());
+  var hasTo = !isNaN(to.getDate());
+
+  if (hasFrom || hasTo) {
+    filter = {$match: {}};
+
+    if (hasFrom || hasTo) {
+      filter.$match['timestamp'] = {};
+      if (hasFrom) {
+        
+        filter.$match['timestamp']['$gte'] =  from.getTime();
+         
+        
+      }
+      if (hasTo) {
+        
+        filter.$match['timestamp']['$lte'] = to.getTime();
+         
+        
+      }
+    }
+  } 
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $match: {
+      source: 'telegram-medicalVisit'
+    }
+  });
+
+  return aggregations;
+};
+
+
+var buildDiseaseTypeFilterQueryTelegramTable = function (from, to) {
+  var filter = undefined;
+
+  from = new Date(from);
+  to = new Date(to);
+  var hasFrom = !isNaN(from.getDate());
+  var hasTo = !isNaN(to.getDate());
+
+  if (hasFrom || hasTo) {
+    filter = {$match: {}};
+
+    if (hasFrom || hasTo) {
+      filter.$match['timestamp'] = {};
+      if (hasFrom) {
+        
+        filter.$match['timestamp']['$gte'] =  from.getTime();
+         
+        
+      }
+      if (hasTo) {
+        
+        filter.$match['timestamp']['$lte'] = to.getTime();
+         
+        
+      }
+    }
+  } 
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $match: {
+      source: 'telegram-disease'
+    }
+  });
+
+  return aggregations;
+};
+
+
+var buildHospitalizationTypeFilterQueryTelegramTable = function (from, to) {
+  var filter = undefined;
+
+  from = new Date(from);
+  to = new Date(to);
+  var hasFrom = !isNaN(from.getDate());
+  var hasTo = !isNaN(to.getDate());
+
+  if (hasFrom || hasTo) {
+    filter = {$match: {}};
+
+    if (hasFrom || hasTo) {
+      filter.$match['timestamp'] = {};
+      if (hasFrom) {
+        
+        filter.$match['timestamp']['$gte'] =  from.getTime();
+         
+        
+      }
+      if (hasTo) {
+        
+        filter.$match['timestamp']['$lte'] = to.getTime();
+         
+        
+      }
+    }
+  } 
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $match: {
+      source: 'telegram-hospitalization'
+    }
+  });
+
+  return aggregations;
+};
+
 
 
 var buildBodyTypeFilterQueryFitbitLine = function (from, to) {

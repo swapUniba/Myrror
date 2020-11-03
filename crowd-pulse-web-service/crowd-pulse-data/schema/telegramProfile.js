@@ -10,8 +10,9 @@ var TelegramProfileSchema = {
     username: String,
     sex: String,
     birth: String,
-    city: String,
+    birthCity: String,
     province: String,
+    fiscalCode: String
 };
 
 module.exports = TelegramProfileSchema;

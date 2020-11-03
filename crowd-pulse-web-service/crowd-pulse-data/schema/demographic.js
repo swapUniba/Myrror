@@ -24,12 +24,12 @@ var demographicsSchema = {
     confidence: Number,
     timestamp: Number
   }],
-  gender: {
+  gender: [{
     value: String,
     source: String,
     confidence: Number,
     timestamp: Number
-  },
+  }],
   language: [{
     value: String,
     source: String,
@@ -60,10 +60,10 @@ var demographicsSchema = {
     confidence: Number,
     timestamp: Number
   }],
-  dateOfBirth: {
+  dateOfBirth: [{
     value: String,
     source: String
-  },
+  }],
   country: [{
     value: String,
     source: String,
