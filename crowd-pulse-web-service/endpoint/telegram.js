@@ -717,7 +717,7 @@ var updateUserTherapy = function(username) {
                 end_date: res2.data[i].end_date,
                 type: res2.data[i].type,
                 drug_name: res2.data[i].drug_name,               
-                inteval_days: res2.data[i].inteval_days,
+                interval_days: res2.data[i].interval_days,
                 day: res2.data[i].day,
                 hour: res2.data[i].hour,
                 source: 'telegram-therapy'
