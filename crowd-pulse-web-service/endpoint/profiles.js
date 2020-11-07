@@ -544,7 +544,7 @@ module.exports = function() {
                                                     end_date: 1,
                                                     type: 1,
                                                     drug_name: 1,
-                                                    inteval_days: 1,
+                                                    interval_days: 1,
                                                     day: 1,
                                                     hour: 1,
                                                 }, function (err, profile) {

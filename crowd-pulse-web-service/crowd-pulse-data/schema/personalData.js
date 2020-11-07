@@ -92,7 +92,7 @@ var PersonalDataSchema = builder(schemas.personalData, {
   end_date: String,
   type: String,
   drug_name: String,
-  inteval_days: Number,
+  interval_days: Number,
   day: String,
   hour: String,
   //Medical Area**
