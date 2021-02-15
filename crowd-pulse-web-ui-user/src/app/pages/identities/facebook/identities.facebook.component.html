@@ -65,8 +65,10 @@
             <div *ngIf="posts.length > 0; else noPosts">
               <mat-card-title>Your last Posts</mat-card-title>
               <div class="post-like-div" *ngFor="let post of posts">
-                <p *ngIf="post.story">Story: {{ post.story }}</p>
-                <p *ngIf="post.text">Text: {{ post.text }} </p>
+                <p *ngIf="post.story">{{ post.story }}</p>
+                <p *ngIf="post.text">"{{ post.text }}"</p>
+                <p *ngIf="post.story || post.text || post.picture" style="color: #d3d3d3; font-size: small;">{{ post.date | date:'dd/LL/yyyy HH:mm' }}</p>
+                <div *ngIf="post.picture"><img src="{{ post.picture }}" width="50%" height="50%"></div>
                 <mat-divider></mat-divider>
               </div>
               <button mat-raised-button color="primary" (click)="updatePosts(null, true)">

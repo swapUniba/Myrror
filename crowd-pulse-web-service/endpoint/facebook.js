@@ -10,20 +10,19 @@ var FacebookProfileSchema = require('./../crowd-pulse-data/schema/facebookProfil
 var batch = require('./../lib/batchOperations');
 
 const DB_PROFILES = databaseName.profiles;
-const CLIENT_SECRET = '7ce264e7a782298475830477d9442bc6';
-const CLIENT_ID = '637963103055683';
+const CLIENT_SECRET = 'b0b359ca60cceb75647988bd76582ac9';
+const CLIENT_ID = '1021524391709700';
 
-const FIELDS = ['id', 'email', 'first_name', 'last_name', 'middle_name', 'link', 'name', 'age_range', 'gender',
-  'languages', 'quotes'];
+const FIELDS = ['id', 'email', 'first_name', 'last_name', 'middle_name', 'link', 'name', 'age_range', 'gender', 'languages', 'quotes', 'picture.type(large)'];
 
-const PERMISSIONS = ['email', 'public_profile', 'user_friends', 'user_likes', 'user_posts'];
+const PERMISSIONS = ['email', 'public_profile', 'user_friends', 'user_likes', 'user_posts', 'user_gender', 'user_age_range'];
 
-const API_ACCESS_TOKEN = 'https://graph.facebook.com/v2.11/oauth/access_token';
-const API_LOGIN_DIALOG = 'https://www.facebook.com/v2.11/dialog/oauth';
-const API_USER_POSTS = 'https://graph.facebook.com/v2.11/me/feed';
-const API_USER_LIKES = 'https://graph.facebook.com/v2.11/me/likes?fields=name,category,created_time';
-const API_USER_DATA = 'https://graph.facebook.com/v2.11/me?fields=' + FIELDS.join(',');
-const API_USER_FRIENDS = 'https://graph.facebook.com/v2.11/me/friends';
+const API_ACCESS_TOKEN = 'https://graph.facebook.com/v9.0/oauth/access_token';
+const API_LOGIN_DIALOG = 'https://www.facebook.com/v9.0/dialog/oauth';
+const API_USER_POSTS = 'https://graph.facebook.com/v9.0/me/feed?fields=id,message,full_picture,created_time,story,shares,to{id,name}';
+const API_USER_LIKES = 'https://graph.facebook.com/v9.0/me/likes?fields=name,category,created_time';
+const API_USER_DATA = 'https://graph.facebook.com/v9.0/me?fields=' + FIELDS.join(',');
+const API_USER_FRIENDS = 'https://graph.facebook.com/v9.0/me/friends';
 
 
 exports.endpoint = function() {
@@ -381,14 +380,16 @@ var updateUserProfile = function(username, callback) {
           if (userData.languages) {
             var langs = [];
             userData.languages.forEach(function (lang) {
-              langs.push(lang.name)
+              langs.push(lang.name);
             });
             profile.identities.facebook.languages = langs;
           }
 
           // save picture url
-          if (userData.id) {
-            profile.identities.facebook.picture = 'https://graph.facebook.com/v2.3/' + userData.id + '/picture?type=large';
+          if (userData.picture) {
+            //var token = profile.identities.configs.facebookConfig.accessToken;
+            //profile.identities.facebook.picture = 'https://graph.facebook.com/v9.0/' + userData.id + '/picture?access_token=' + token + '&type=large';
+            profile.identities.facebook.picture = userData.picture.data.url;
           }
 
           // change profile picture
@@ -444,16 +445,19 @@ var updatePosts = function(username) {
           }
 
           var messages = [];
+
           posts.data.forEach(function (post) {
             var toUsers = null;
             if (post.to) {
-              toUsers = post.to.map(function (users) {
+              toUsers = post.to.data.map(function (users) {
                 return users.name;
               });
             }
+
             messages.push({
               oId: post.id,
               text: post.message || '',
+              picture: post.full_picture,
               source: 'facebook_' + facebookConfig.facebookId,
               fromUser: facebookConfig.facebookId,
               date: new Date(post.created_time),
@@ -462,6 +466,7 @@ var updatePosts = function(username) {
               toUsers: toUsers,
               share: share
             });
+
           });
 
           storeMessages(messages, username).then(function () {
