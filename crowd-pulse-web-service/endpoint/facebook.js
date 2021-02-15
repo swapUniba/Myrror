@@ -8,10 +8,11 @@ var databaseName = require('./../crowd-pulse-data/databaseName');
 var config = require('./../lib/config');
 var FacebookProfileSchema = require('./../crowd-pulse-data/schema/facebookProfile');
 var batch = require('./../lib/batchOperations');
+var keys = require('./keys.js');
 
 const DB_PROFILES = databaseName.profiles;
-const CLIENT_SECRET = 'b0b359ca60cceb75647988bd76582ac9';
-const CLIENT_ID = '1021524391709700';
+const CLIENT_SECRET = keys.FACEBOOK_SECRET;
+const CLIENT_ID = keys.FACEBOOK_ID;
 
 const FIELDS = ['id', 'email', 'first_name', 'last_name', 'middle_name', 'link', 'name', 'age_range', 'gender', 'languages', 'quotes', 'picture.type(large)'];
 

@@ -8,9 +8,10 @@ var config = require('./../lib/config');
 var databaseName = require('./../crowd-pulse-data/databaseName');
 var LinkedInProfileSchema = require('./../crowd-pulse-data/schema/linkedinProfile');
 var batch = require('./../lib/batchOperations');
+var keys = require('./keys.js');
 
-const CLIENT_ID = '77kw2whm8zdmzr';
-const CLIENT_SECRET = 'IgFP60GaF2Sa8jzD';
+const CLIENT_ID = keys.LINKEDIN_ID;
+const CLIENT_SECRET = keys.LINKEDIN_SECRET;
 const PERMISSION = ['r_basicprofile', 'r_emailaddress', 'rw_company_admin', 'w_share'];
 
 const API_LOGIN_DIALOG = 'https://www.linkedin.com/oauth/v2/authorization';
