@@ -8,7 +8,7 @@ import {ToastrService} from 'ngx-toastr';
 import {environment} from '../../../../environments/environment';
 import {ConfirmDialogComponent} from '../../../components/confirm-dialog/confirm-dialog.component';
 
-const DELAY_TIMEOUT = 3500; // milliseconds
+const DELAY_TIMEOUT = 10 * 1000; // milliseconds
 
 @Component({
   styleUrls: ['./identities.instagram.component.scss'],
@@ -51,6 +51,11 @@ export class IdentitiesInstagramComponent implements OnInit {
    */
   appName: string;
 
+  /**
+   * Instagram username
+   */
+  instagramUsername: string;
+
   // data source containing user Instagram profile data
   dataSource: MatTableDataSource<any>;
   displayedColumns = ['dataName', 'dataValue'];
@@ -88,43 +93,30 @@ export class IdentitiesInstagramComponent implements OnInit {
         window.history.replaceState(null, null, window.location.pathname);
 
       } else {
-
-        // reading parameters returned by Instagram
-        this.route.queryParams.subscribe(params => {
-          this.authorizationCode = params['code'];
-
-          if (this.authorizationCode) {
-
-            // clean the URL
-            window.history.replaceState(null, null, window.location.pathname);
-
-            // request access token
-            this.instagramService.accessToken(this.authorizationCode).subscribe((res) => {
-              // update Instagram profile
-               this.updateProfile();
-            });
-          } else {
-            this.loading = false;
-          }
-        });
+        this.loading = false;
       }
     });
+  }
+
+  onUpdateUserName(event: Event) {
+    this.instagramUsername = (<HTMLInputElement>event.target).value;
   }
 
   /**
    * Associate user account with Instagram.
    */
   associate() {
-    this.instagramService.getLoginDialog().subscribe(
+    this.instagramService.linkAccount(this.instagramUsername).subscribe(
       (res) => {
-        window.location.href = res.loginDialogUrl;
+        console.log(res);
+        if (res.auth) {
+          window.location.href = environment.instagramCallbackUrl;
+        } else {
+          this.toast.error('Invalid username.');
+        }
       },
       (err) => {
-        if (!isNullOrUndefined(err.error.message)) {
-          this.toast.error(err.error.message);
-        } else {
-          this.toast.error('Server error occurred. Try again later.');
-        }
+        this.toast.error('Server error occurred. Try again later.');
       });
   }
 

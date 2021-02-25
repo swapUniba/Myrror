@@ -9,9 +9,11 @@
 <ng-template #content>
   <div class="main-content-page" *ngIf="!user || !user.identities || !user.identities.instagram; else instagramData">
     <h2>No Linked Account</h2>
-    <p>By linking your account, you agree that {{appName}} will be able to read your Instagram profile information,
-      as well as your posts and the pages you like.</p>
-    <button mat-raised-button (click)="associate()" color="primary">Link Account</button>
+    <p>By linking your account, you agree that {{appName}} will be able to read your Instagram public profile information.</p>
+    <form>
+      <input (input)="onUpdateUserName($event)" type="text"  class="form-control instagram-username-input" placeholder="Enter here your Instagram username">
+    </form>
+    <button mat-raised-button (click)="associate()" color="primary" style="top: 20px;">Link Account</button>
   </div>
 
   <ng-template #instagramData>
@@ -68,9 +70,10 @@
                     <td style="width:50%">
                       <table>
                         <td>
-                          <tr align="left"><p *ngIf="post.text">Caption:  {{ post.text }} </p></tr>
-                          <tr align="left"><p *ngIf="post.date">Date:  {{ post.date | date:'short' }} </p></tr>
-                          <tr align="left"><p *ngIf="post.likes">Likes:  {{ post.likes }} </p></tr>
+                          <tr align="left"><p *ngIf="post.text">"{{ post.text }}"</p></tr>
+                          <tr align="left"><p *ngIf="post.likes" style="color: red; font-weight: bolder; font-size: larger">❤ {{ post.likes }}</p></tr>
+                          <tr align="left"><p *ngIf="post.date" style="color: #d3d3d3; font-size: small;">{{ post.date | date:'dd/LL/yyyy HH:mm' }}</p></tr>
+                          <div *ngIf="post.picture"><img src="{{ post.picture }}" width="50%" height="50%"></div>
                         </td>
                       </table>
                     </td>
