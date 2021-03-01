@@ -112,7 +112,11 @@ export class IdentitiesInstagramComponent implements OnInit {
         if (res.auth) {
           window.location.href = environment.instagramCallbackUrl;
         } else {
-          this.toast.error('Invalid username.');
+          if (res.private) {
+            this.toast.error('Profile is private.');
+          } else {
+            this.toast.error('Invalid username.');
+          }
         }
       },
       (err) => {

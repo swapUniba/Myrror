@@ -8,7 +8,7 @@ import {MatDialog, MatTableDataSource} from '@angular/material';
 import {ConfirmDialogComponent} from '../../../components/confirm-dialog/confirm-dialog.component';
 import {environment} from '../../../../environments/environment';
 
-const DELAY_TIMEOUT = 3.5 * 1000; // milliseconds
+const DELAY_TIMEOUT = 10 * 1000; // milliseconds
 
 @Component({
   styleUrls: ['./identities.facebook.component.scss'],

@@ -24,12 +24,17 @@ exports.endpoint = function() {
       .post(function (req, res){
     try {
       userInstagram(req.body.username).then(function (user){
-        setUserProfile(req.body.myrror_user, user);
-        res.status(200);
-        res.json({auth: true});
+        if (user.isPrivate) {
+          res.status(200);
+          res.json({auth: false, private: true});
+        } else {
+          setUserProfile(req.body.myrror_user, user);
+          res.status(200);
+          res.json({auth: true, private: false});
+        }
       }).catch(function (){
         res.status(200);
-        res.json({auth: false});
+        res.json({auth: false, private: false});
       });
 
     }catch (err){
@@ -281,10 +286,6 @@ var updatePosts = function(username) {
         dbConnection.disconnect();
 
         var instagramConfig = profile.identities.configs.instagramConfig;
-        var params = {
-          access_token: instagramConfig.accessToken,
-          min_id: instagramConfig.lastPostId
-        };
 
         var share = instagramConfig.shareMessages;
 
@@ -324,7 +325,7 @@ var updatePosts = function(username) {
               if (res.taggedUsers) {
 
                 res.taggedUsers.forEach( function(user) {
-                  if(user.username != instagramUsername) {
+                  if(user.username !== instagramUsername) {
                     users.push(user.username);
                     friends.push({
                       username: username,
@@ -338,9 +339,10 @@ var updatePosts = function(username) {
               temp.push(friends);
 
               instagramConfig.lastPostId  = instagramConfig.lastPostId ? instagramConfig.lastPostId : '0';
-              if (instagramConfig.lastPostId < res.shortcode) {
+
+              if (instagramConfig.lastPostId < res.takenAt) {
                 messages.push({
-                  oId: res.shortcode,
+                  oId: res.takenAt,
                   picture: res.displayUrl,
                   text: description,
                   source: 'instagram_' + instagramConfig.instagramId,
@@ -409,126 +411,6 @@ var updatePosts = function(username) {
               });
             });
           });
-/*
-          user.posts.forEach(function (post){
-            userInstagram.getPostData(post.shortCode).then(function (post){
-              var location_name = null;
-              var location_latitude = null;
-              var location_longitude = null;
-              if (post.location) {
-                location_name = post.location.name;
-                // location_latitude = post.location.latitude;
-                // location_longitude = post.location.longitude;
-              }
-              var description = '';
-              if (post.caption) {
-                description = post.caption;
-              }
-
-              var images = [];
-              if (post.childrenPictures.length > 0) {
-                post.childrenPictures.forEach(function (childPicture) {
-                  images.push(childPicture.displayUrl);
-                })
-              }
-
-              // users in photo control
-              var users = [];
-              var friends = [];
-
-              if (post.taggedUsers) {
-
-                post.taggedUsers.forEach( function(user) {
-
-                  users.push(user.username);
-                  friends.push({
-                    username: username,
-                    contactId: user.username,
-                    source: 'instagram'
-                  })
-                });
-              }
-              temp.push(friends);
-
-              instagramConfig.lastPostId  = instagramConfig.lastPostId ? instagramConfig.lastPostId : '0';
-              if (instagramConfig.lastPostId < post.shortcode) {
-                messages.push({
-                  oId: post.shortcode,
-                  picture: post.displayUrl,
-                  text: description,
-                  source: 'instagram_' + instagramConfig.instagramId,
-                  fromUser: instagramConfig.instagramId,
-                  date: new Date(post.takenAt * 1000), //unix time *1000
-                  images: images,
-                  likes: post.likesCount,
-                  comments: post.comments.length,
-                  location: location_name,
-                  latitude: location_latitude,
-                  longitude: location_longitude,
-                  refUsers: users,
-                  language: DEFAULT_LANGUAGE,
-                  share: share
-                });
-                console.log(post.shortcode);
-                console.log(messages.length);
-              }
-
-            });
-          })
-
-          temp.forEach(function(u) {
-            if(u && u.length > 0) {
-              friendsToSave.push(u)
-            }
-          });
-
-          storeFriends(friendsToSave, username).then(function () {
-            storeFriends(friendsToSave, databaseName.globalData);
-          });
-
-          console.log('HELLO');
-          console.log(messages);
-
-          storeMessages(messages, username).then(function () {
-            storeMessages(messages, databaseName.globalData).then(function () {
-
-              // if new messages are saved
-              if (messages.length > 0) {
-
-                // create new db connection to save last post timestamp in the user profile config
-                dbConnection = new CrowdPulse();
-                dbConnection.connect(config.database.url, DB_PROFILES).then(function (conn) {
-                  conn.Profile.findOne({username: username}, function (err, profile) {
-                    if (profile) {
-                      profile.identities.configs.instagramConfig.lastPostId = messages[0].oId;
-
-                      profile.save().then(function () {
-                        dbConnection.disconnect();
-                      });
-                    }
-                  });
-                });
-
-                // run CrowdPulse
-                var projects = config['crowd-pulse'].projects;
-                if (projects && projects.length > 0) {
-
-                  // loop projects with a delay between each run
-                  (function loopWithDelay(i) {
-                    setTimeout(function () {
-                      batch.runCrowdPulse(projects[i], username);
-
-                      if (i--) {
-                        loopWithDelay(i);
-                      }
-                    }, 60000);
-                  })(projects.length - 1);
-                }
-
-              }
-            });
-          });
-*/
         }).catch(function (){
           console.log(err);
         })
