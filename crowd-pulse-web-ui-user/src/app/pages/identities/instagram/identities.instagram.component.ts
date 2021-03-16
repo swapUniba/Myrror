@@ -8,7 +8,7 @@ import {ToastrService} from 'ngx-toastr';
 import {environment} from '../../../../environments/environment';
 import {ConfirmDialogComponent} from '../../../components/confirm-dialog/confirm-dialog.component';
 
-const DELAY_TIMEOUT = 10 * 1000; // milliseconds
+const DELAY_TIMEOUT = 3.5 * 1000; // milliseconds
 
 @Component({
   styleUrls: ['./identities.instagram.component.scss'],
@@ -113,7 +113,7 @@ export class IdentitiesInstagramComponent implements OnInit {
           window.location.href = environment.instagramCallbackUrl;
         } else {
           if (res.private) {
-            this.toast.error('Profile is private.');
+            this.toast.error('Profile is private. Please set your profile privacy to public.');
           } else {
             this.toast.error('Invalid username.');
           }

@@ -388,8 +388,6 @@ var updateUserProfile = function(username, callback) {
 
           // save picture url
           if (userData.picture) {
-            //var token = profile.identities.configs.facebookConfig.accessToken;
-            //profile.identities.facebook.picture = 'https://graph.facebook.com/v9.0/' + userData.id + '/picture?access_token=' + token + '&type=large';
             profile.identities.facebook.picture = userData.picture.data.url;
           }
 
