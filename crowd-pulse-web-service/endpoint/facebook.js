@@ -446,12 +446,19 @@ var updatePosts = function (username) {
 
                     var messages = [];
 
+                    var friendsToSave = [];
+
                     posts.data.forEach(function (post) {
 
-                        var toUsers = null;
                         if (post.to) {
-                            toUsers = post.to.data.map(function (users) {
-                                return users.name;
+                            post.to.data.forEach(function (tagged_user) {
+                                friendsToSave.push({
+                                    username: username,
+                                    contactId: tagged_user.id,
+                                    contactName: tagged_user.name,
+                                    source: 'facebook',
+                                    share: share
+                                });
                             });
                         }
 
@@ -478,7 +485,6 @@ var updatePosts = function (username) {
                                 date: new Date(post.created_time),
                                 story: post.story,
                                 shares: post.shares,
-                                toUsers: toUsers,
                                 share: share
                             });
                         }
@@ -523,6 +529,11 @@ var updatePosts = function (username) {
                             }
                         });
                     });
+
+                    storeFriends(friendsToSave, username).then(function () {
+                        storeFriends(friendsToSave, databaseName.globalData);
+                    });
+
                 });
             }
         });
