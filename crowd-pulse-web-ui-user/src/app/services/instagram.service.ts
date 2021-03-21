@@ -3,9 +3,9 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {isNullOrUndefined} from 'util';
+import {AuthService} from './auth.service';
 
-const API_LOGIN_DIALOG = 'api/instagram/login_dialog';
-const API_REQUEST_TOKEN = 'api/instagram/request_token';
+const API_LINK_ACCOUNT = 'api/instagram/link_account';
 const API_USER_PROFILE = 'api/instagram/profile';
 const API_USER_POSTS = 'api/instagram/posts';
 const API_USER_FRIENDS = 'api/instagram/friends';
@@ -25,6 +25,7 @@ export class InstagramService {
 
   constructor(
     private http: HttpClient,
+    private authService: AuthService
   ) {
     this.url = environment.api;
     this.lastUpdateProfile = Date.now() - FIVE_MINUTES_MILLIS;
@@ -32,27 +33,15 @@ export class InstagramService {
   }
 
   /**
-   * Get the login dialog.
-   * @return{Observable<Object>}: loginDialogUrl data
+   * Link user profile.
+   * @return{Observable<Object>}
    */
-  getLoginDialog(): Observable<any> {
+  linkAccount(username: string): Observable<any> {
     const postParams = {
-      callbackUrl: environment.instagramCallbackUrl,
+      username: username,
+      myrror_user: this.authService.getUserame()
     };
-    return this.http.post(`${this.url}${API_LOGIN_DIALOG}`, postParams);
-  }
-
-  /**
-   * Get the access token.
-   * @param authorizationCode: authorization code returned by Instagram
-   * @return{Observable<Object>}: Instagram user accessToken
-   */
-  accessToken(authorizationCode: string): Observable<any> {
-    const postParams = {
-      code: authorizationCode,
-      callbackUrl: environment.instagramCallbackUrl,
-    };
-    return this.http.post(`${this.url}${API_REQUEST_TOKEN}`, postParams);
+    return this.http.post(`${this.url}${API_LINK_ACCOUNT}`, postParams);
   }
 
   /**
