@@ -63,35 +63,21 @@
         <ng-template #postsCard>
           <mat-card fxFlex="100" fxFlex.lt-md="100" class="instagram-card">
             <div *ngIf="posts.length > 0; else noPosts">
+
               <mat-card-title>Your last Posts</mat-card-title>
               <div class="post-like-div" *ngFor="let post of posts">
-                <table style="width:100%">
-                  <tr>
-                    <td style="width:50%">
-                      <table>
-                        <td>
-                          <tr align="left"><p *ngIf="post.text">"{{ post.text }}"</p></tr>
-                          <tr align="left"><p *ngIf="post.likes" style="color: red; font-weight: bolder; font-size: larger">❤ {{ post.likes }}</p></tr>
-                          <tr align="left"><p *ngIf="post.date" style="color: #d3d3d3; font-size: small;">{{ post.date | date:'dd/LL/yyyy HH:mm' }}</p></tr>
-                          <div *ngIf="post.picture"><img src="{{ post.picture }}" width="50%" height="50%"></div>
-                        </td>
-                      </table>
-                    </td>
-                    <td style="width:50%">
-                      <table style="width:50%">
-                        <tr>
-                          <td><p *ngIf="post.images && post.images.length"><img src="{{ post.images[0] }}" height="80%" width="80%"> </p></td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
+                <p *ngIf="post.text" style="font-size: larger">{{ post.text }}</p>
+                <p *ngIf="post.location">📍 {{ post.location }}</p>
+                <p *ngIf="post.likes" style="color: red; font-weight: bolder; font-size: larger">❤ {{ post.likes }}</p>
+                <p *ngIf="post.date" style="color: #d3d3d3; font-size: small;">{{ post.date | date:'dd/LL/yyyy HH:mm' }}</p>
+                <div *ngIf="post.picture"><img src="{{ post.picture }}" width="20%" height="20%"></div>
                 <mat-divider></mat-divider>
               </div>
               <button mat-raised-button color="primary" (click)="updatePosts(null, true)">
                 <mat-icon aria-label="get_data">cached</mat-icon>
                 Update Posts
               </button>
+
             </div>
             <ng-template #noPosts>
               <mat-card-title>No Posts Acquired</mat-card-title>
