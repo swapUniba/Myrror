@@ -8,7 +8,7 @@ import {MatDialog, MatTableDataSource} from '@angular/material';
 import {ConfirmDialogComponent} from '../../../components/confirm-dialog/confirm-dialog.component';
 import {environment} from '../../../../environments/environment';
 
-const DELAY_TIMEOUT = 3.5 * 1000; // milliseconds
+const DELAY_TIMEOUT = 7.5 * 1000; // milliseconds
 
 @Component({
   styleUrls: ['./identities.facebook.component.scss'],
@@ -186,7 +186,7 @@ export class IdentitiesFacebookComponent implements OnInit {
         this.setupFacebookProfileTable();
       } else {
         if (showToast) {
-          this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+          this.toast.warning('Timeout not elapsed. Retry later');
         }
       }
     });
@@ -215,7 +215,7 @@ export class IdentitiesFacebookComponent implements OnInit {
           }
         } else {
           if (showToast) {
-            this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+            this.toast.warning('Timeout not elapsed. Retry later');
           }
         }
       },
@@ -246,7 +246,7 @@ export class IdentitiesFacebookComponent implements OnInit {
           }
         } else {
           if (showToast) {
-            this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+            this.toast.warning('Timeout not elapsed. Retry later');
           }
         }
       },
@@ -277,7 +277,7 @@ export class IdentitiesFacebookComponent implements OnInit {
           }
         } else {
           if (showToast) {
-            this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+            this.toast.warning('Timeout not elapsed. Retry later');
           }
         }
       },

@@ -10,7 +10,6 @@ var MessageSchema = builder(schemas.message, {
   id: mongoose.Schema.ObjectId,
   oId: String,
   text: String,
-  picture: String,
   story: String,
   source: String,
   fromUser: String,

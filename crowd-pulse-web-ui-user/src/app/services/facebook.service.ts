@@ -13,7 +13,7 @@ const API_USER_FRIENDS = 'api/facebook/friends';
 const API_DELETE_ACCOUNT = 'api/facebook/delete';
 const API_CONFIG = 'api/facebook/config';
 
-const FIVE_MINUTES_MILLIS = 5 * 60 * 1000;
+const NEXT_UPDATE_MILLIS = 1 * 60 * 1000;
 
 @Injectable()
 export class FacebookService {
@@ -30,10 +30,10 @@ export class FacebookService {
     private http: HttpClient,
   ) {
     this.url = environment.api;
-    this.lastUpdateProfile = Date.now() - FIVE_MINUTES_MILLIS;
-    this.lastUpdatePosts = Date.now() - FIVE_MINUTES_MILLIS;
-    this.lastUpdateLikes = Date.now() - FIVE_MINUTES_MILLIS;
-    this.lastUpdateFriends = Date.now() - FIVE_MINUTES_MILLIS;
+    this.lastUpdateProfile = Date.now() - NEXT_UPDATE_MILLIS;
+    this.lastUpdatePosts = Date.now() - NEXT_UPDATE_MILLIS;
+    this.lastUpdateLikes = Date.now() - NEXT_UPDATE_MILLIS;
+    this.lastUpdateFriends = Date.now() - NEXT_UPDATE_MILLIS;
   }
 
   /**
@@ -67,7 +67,7 @@ export class FacebookService {
   profile(): Observable<any> {
 
     // timeout
-    if (Date.now() - this.lastUpdateProfile >= FIVE_MINUTES_MILLIS) {
+    if (Date.now() - this.lastUpdateProfile >= NEXT_UPDATE_MILLIS) {
       this.lastUpdateProfile = Date.now();
       return this.http.get(`${this.url}${API_USER_PROFILE}`);
     } else {
@@ -84,7 +84,7 @@ export class FacebookService {
   userPosts(messagesToRead?: number): Observable<any> {
 
     // timeout
-    if (messagesToRead || Date.now() - this.lastUpdatePosts >= FIVE_MINUTES_MILLIS) {
+    if (messagesToRead || Date.now() - this.lastUpdatePosts >= NEXT_UPDATE_MILLIS) {
 
       // update the timeout only if user wants update posts
       if (!messagesToRead) {
@@ -110,7 +110,7 @@ export class FacebookService {
   likes(likesToRead?: number, dateFrom?: Date, dateTo?: Date): Observable<any> {
 
     // timeout
-    if (likesToRead || Date.now() - this.lastUpdateLikes >= FIVE_MINUTES_MILLIS) {
+    if (likesToRead || Date.now() - this.lastUpdateLikes >= NEXT_UPDATE_MILLIS) {
 
       // update the timeout only if user wants update likes
       if (!likesToRead) {
@@ -135,7 +135,7 @@ export class FacebookService {
   friends(friendsToRead?: number): Observable<any> {
 
     // timeout
-    if (friendsToRead || Date.now() - this.lastUpdateFriends >= FIVE_MINUTES_MILLIS) {
+    if (friendsToRead || Date.now() - this.lastUpdateFriends >= NEXT_UPDATE_MILLIS) {
 
       // update the timeout only if user wants update friends
       if (!friendsToRead) {

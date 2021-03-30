@@ -318,14 +318,14 @@ var updatePosts = function (username) {
                         var images = [];
                         if (post.children.length > 0) {
                             post.children.forEach(function (childPicture) {
-                                var url = 'https://www.instagram.com/p/' + childPicture.shortCode + '/';
-                                images.push(url);
+                                images.push(childPicture.imageUrl);
                             })
+                        } else {
+                            images.push(post.imageUrl);
                         }
 
                         return {
                             oId: post.timestamp,
-                            picture: post.imageUrl,
                             text: description,
                             source: 'instagram_' + instagramConfig.instagramId,
                             fromUser: instagramConfig.instagramId,

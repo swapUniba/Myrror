@@ -12,7 +12,7 @@ const API_USER_FRIENDS = 'api/instagram/friends';
 const API_DELETE_ACCOUNT = 'api/instagram/delete';
 const API_CONFIG = 'api/instagram/config';
 
-const FIVE_MINUTES_MILLIS = 5 * 60 * 1000;
+const NEXT_UPDATE_MILLIS = 1 * 60 * 1000;
 
 @Injectable()
 export class InstagramService {
@@ -28,8 +28,8 @@ export class InstagramService {
     private authService: AuthService
   ) {
     this.url = environment.api;
-    this.lastUpdateProfile = Date.now() - FIVE_MINUTES_MILLIS;
-    this.lastUpdatePosts = Date.now() - FIVE_MINUTES_MILLIS;
+    this.lastUpdateProfile = Date.now() - NEXT_UPDATE_MILLIS;
+    this.lastUpdatePosts = Date.now() - NEXT_UPDATE_MILLIS;
   }
 
   /**
@@ -51,7 +51,7 @@ export class InstagramService {
   profile(): Observable<any> {
 
     // timeout
-    if (Date.now() - this.lastUpdateProfile >= FIVE_MINUTES_MILLIS) {
+    if (Date.now() - this.lastUpdateProfile >= NEXT_UPDATE_MILLIS) {
       this.lastUpdateProfile = Date.now();
       return this.http.get(`${this.url}${API_USER_PROFILE}`);
     } else {
@@ -68,7 +68,7 @@ export class InstagramService {
   userPosts(messagesToRead?: number): Observable<any> {
 
     // timeout
-    if (messagesToRead || Date.now() - this.lastUpdatePosts >= FIVE_MINUTES_MILLIS) {
+    if (messagesToRead || Date.now() - this.lastUpdatePosts >= NEXT_UPDATE_MILLIS) {
 
       // update the timeout only if user wants update posts
       if (!messagesToRead) {
