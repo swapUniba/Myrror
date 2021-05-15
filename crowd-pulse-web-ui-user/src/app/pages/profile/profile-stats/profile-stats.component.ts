@@ -9,6 +9,7 @@ import {FitbitService} from '../../../services/fitbit.service';
 import {TelegramService} from '../../../services//telegram.service';
 
 import * as leaflet from 'leaflet';
+import * as process from "process";
 
 @Component({
   styleUrls: ['./profile-stats.component.scss'],
@@ -329,11 +330,6 @@ export class ProfileStatsComponent {
   chartsLoading: boolean;
 
   /**
-   * GPS coordinate.
-   */
-  gpsCoordinate: { latitude: number, longitude: number }[];
-
-  /**
    * Check if the map is visible.
    */
   isMapSet: boolean;
@@ -342,6 +338,11 @@ export class ProfileStatsComponent {
    * Map to show.
    */
   leaflet_map: any;
+
+  /**
+   * Map layer that contains markers.
+   */
+  markers_layer: any;
 
   /**
    * Social Network messages (tweets, Facebook posts, Instagram posts, etc).
@@ -458,9 +459,17 @@ export class ProfileStatsComponent {
       this.customChart = null;
       this.chartsLoading = false;
       this.socialMessages = null;
-      this.gpsCoordinate = null;
-      this.isMapSet = false;
+      this.cleanMap();
     }
+  }
+
+  /**
+   * Clean the map
+   */
+  cleanMap() {
+    this.isMapSet = undefined;
+    this.leaflet_map = undefined;
+    this.markers_layer = undefined;
   }
 
   /**
@@ -468,6 +477,9 @@ export class ProfileStatsComponent {
    */
   updateChart() {
     this.customChart = undefined;
+    if (this.selected.visualization.id !== 'personaldata-gps') {
+      this.cleanMap();
+    }
     this.buildCustomChart();
   }
 
@@ -546,8 +558,7 @@ export class ProfileStatsComponent {
         this.customChart = null;
         this.chartsLoading = false;
         this.socialMessages = null;
-        this.gpsCoordinate = null;
-        this.isMapSet = false;
+        this.cleanMap();
         break;
     }
   }
@@ -610,15 +621,16 @@ export class ProfileStatsComponent {
           minZoom: 3,
           attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(this.leaflet_map);
+        this.markers_layer = leaflet.layerGroup().addTo(this.leaflet_map);
       }
 
-      this.gpsCoordinate = null;
+      this.markers_layer.clearLayers();
       this.statsService.getGPSMapStats(filters).then(
         (stats) => {
 
           if (stats && stats.length) {
             stats.forEach((position) => {
-              leaflet.marker([position.latitude, position.longitude]).addTo(this.leaflet_map);
+              leaflet.marker([position.latitude, position.longitude]).addTo(this.markers_layer);
             });
           }
 

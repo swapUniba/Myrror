@@ -66,11 +66,23 @@
 
               <mat-card-title>Your last Posts</mat-card-title>
               <div class="post-like-div" *ngFor="let post of posts">
+
                 <p *ngIf="post.text" style="font-size: larger">{{ post.text }}</p>
                 <p *ngIf="post.location">📍 {{ post.location }}</p>
                 <p *ngIf="post.likes" style="font-size: larger"><span style="color: red">❤</span> {{ post.likes }}</p>
                 <p *ngIf="post.date" style="color: #d3d3d3; font-size: small;">{{ post.date | date:'dd/LL/yyyy HH:mm' }}</p>
-                <div *ngIf="post.images"><img src="{{ post.images[0] }}" width="33%" height="33%"></div>
+
+                <button mat-raised-button color="primary" style="margin-top: 30px; margin-bottom: 20px">
+                  <a *ngIf="post.images" href="{{ post.images[0] }}" target="_blank" style="color: white; text-decoration: none">
+
+                    <i class="fa fa-instagram fa-fw fa-lg" aria-hidden="true"></i>
+                    <span fxHide.lt-sm style="font-size: large">
+                    Watch this post on Instagram
+                  </span>
+
+                  </a>
+                </button>
+
                 <mat-divider style="margin-top: 10px; margin-bottom: 10px"></mat-divider>
               </div>
               <button mat-raised-button color="primary" (click)="updatePosts(null, true)" style="margin-top: 10px">

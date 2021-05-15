@@ -208,10 +208,14 @@ var setUserProfile = function (myrrorUsername, userData) {
             profile.identities.instagram.follows = userData.subscribtions;
             profile.identities.instagram.followed_by = userData.subscribersCount;
 
+            /*
+
             // change profile picture
             if (profile.identities.instagram.picture) {
                 profile.pictureUrl = profile.identities.instagram.picture;
             }
+
+             */
 
             profile.save().then(function () {
                 console.log("Instagram profile of " + myrrorUsername + " setted at " + new Date());
@@ -252,10 +256,14 @@ var updateUserProfile = function (username, callback) {
                 profile.identities.instagram.follows = userData.subscribtions;
                 profile.identities.instagram.followed_by = userData.subscribersCount;
 
+                /*
+
                 // change profile picture
                 if (profile.identities.instagram.picture) {
                     profile.pictureUrl = profile.identities.instagram.picture;
                 }
+
+                */
 
                 profile.save().then(function () {
                     console.log("Instagram profile of " + username + " updated at " + new Date());
@@ -316,6 +324,7 @@ var updatePosts = function (username) {
                         }
 
                         var images = [];
+                        images.push(post.url);
                         if (post.children.length > 0) {
                             post.children.forEach(function (childPicture) {
                                 images.push(childPicture.imageUrl);
