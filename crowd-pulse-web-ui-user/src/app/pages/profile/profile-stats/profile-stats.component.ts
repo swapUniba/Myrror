@@ -9,7 +9,6 @@ import {FitbitService} from '../../../services/fitbit.service';
 import {TelegramService} from '../../../services//telegram.service';
 
 import * as leaflet from 'leaflet';
-import * as process from "process";
 
 @Component({
   styleUrls: ['./profile-stats.component.scss'],
