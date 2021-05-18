@@ -7,8 +7,9 @@ import {FacebookService} from '../../../services/facebook.service';
 import {InstagramService} from '../../../services/instagram.service';
 import {FitbitService} from '../../../services/fitbit.service';
 import {TelegramService} from '../../../services//telegram.service';
+import {LeafletService} from '../../../services/leaflet.service';
 
-import * as leaflet from 'leaflet';
+// import * as leaflet from 'leaflet';
 
 @Component({
   styleUrls: ['./profile-stats.component.scss'],
@@ -428,8 +429,8 @@ export class ProfileStatsComponent {
    */
   hospitalization = [];
 
-
   constructor(
+    private leafletService: LeafletService,
     private statsService: StatsService,
     private authService: AuthService,
     private facebookService: FacebookService,
@@ -611,16 +612,16 @@ export class ProfileStatsComponent {
 
       if (!this.isMapSet) {
         this.isMapSet = true;
-        this.leaflet_map = leaflet.map('map', {
+        this.leaflet_map = this.leafletService.leaflet.map('map', {
           center: [ 41.9, 12.5 ],
           zoom: 5
         });
-        leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        this.leafletService.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 18,
           minZoom: 3,
           attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(this.leaflet_map);
-        this.markers_layer = leaflet.layerGroup().addTo(this.leaflet_map);
+        this.markers_layer = this.leafletService.leaflet.layerGroup().addTo(this.leaflet_map);
       }
 
       this.markers_layer.clearLayers();
@@ -629,7 +630,7 @@ export class ProfileStatsComponent {
 
           if (stats && stats.length) {
             stats.forEach((position) => {
-              leaflet.marker([position.latitude, position.longitude]).addTo(this.markers_layer);
+              this.leafletService.leaflet.marker([position.latitude, position.longitude]).addTo(this.markers_layer);
             });
           }
 
