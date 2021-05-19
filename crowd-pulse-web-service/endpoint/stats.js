@@ -407,6 +407,11 @@ module.exports = function () {
                     return conn.Message.coordinatesMessages(req.query.from, req.query.to, req.query.lat, req.query.lng, req.query.ray).then(function (mess_data){
 
                         return new Promise(function (resolve, reject){
+
+                            pers_data.forEach(function (data){
+                               data.source = 'personalData';
+                            });
+
                             resolve(pers_data.concat(mess_data));
                         });
                     });

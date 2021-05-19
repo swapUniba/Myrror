@@ -9,11 +9,9 @@ import {FitbitService} from '../../../services/fitbit.service';
 import {TelegramService} from '../../../services//telegram.service';
 import {LeafletService} from '../../../services/leaflet.service';
 
-// import * as leaflet from 'leaflet';
-
 @Component({
   styleUrls: ['./profile-stats.component.scss'],
-  templateUrl: './profile-stats.component.html'
+  templateUrl: './profile-stats.component.html',
 })
 
 export class ProfileStatsComponent {
@@ -120,7 +118,8 @@ export class ProfileStatsComponent {
   }, {
     name: 'GPS Positions',
     id: 'personaldata-gps',
-    description: 'This view shows your movements, based on your GPS coordinates (S= Start Position, E=End Position)',
+    description: 'This view shows the GPS coordinates from the physical devices connected to your account (Android and Fitbit)' +
+      ' and the locations of your posts on Facebook, Instagram and Twitter. Clicking on a marker of a post, will show you a popup with the details.',
     types: [
       {
         name: 'map',
@@ -340,9 +339,13 @@ export class ProfileStatsComponent {
   leaflet_map: any;
 
   /**
-   * Map layer that contains markers.
+   * Map layers that contain markers.
    */
-  markers_layer: any;
+  markers_personal_data: any;
+  markers_instagram: any;
+  markers_facebook: any;
+  markers_twitter: any;
+
 
   /**
    * Social Network messages (tweets, Facebook posts, Instagram posts, etc).
@@ -469,7 +472,10 @@ export class ProfileStatsComponent {
   cleanMap() {
     this.isMapSet = undefined;
     this.leaflet_map = undefined;
-    this.markers_layer = undefined;
+    this.markers_personal_data = undefined;
+    this.markers_instagram = undefined;
+    this.markers_facebook = undefined;
+    this.markers_twitter = undefined;
   }
 
   /**
@@ -598,8 +604,6 @@ export class ProfileStatsComponent {
    */
   private buildGPSPositionChart() {
 
-    // TODO
-
     const filters = {
       latitude: this.filters.filterCoordinate.latitude,
       longitude: this.filters.filterCoordinate.longitude,
@@ -608,29 +612,149 @@ export class ProfileStatsComponent {
       dateTo: this.filters.filterDate.dateTo,
     };
 
+    const gps_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-gps.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const facebook_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-facebook.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const instagram_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-instagram.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const twitter_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-twitter.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
     setTimeout(() => {
 
       if (!this.isMapSet) {
         this.isMapSet = true;
-        this.leaflet_map = this.leafletService.leaflet.map('map', {
-          center: [ 41.9, 12.5 ],
-          zoom: 5
-        });
-        this.leafletService.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+        const osm_map_style = this.leafletService.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 18,
           minZoom: 3,
           attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(this.leaflet_map);
-        this.markers_layer = this.leafletService.leaflet.layerGroup().addTo(this.leaflet_map);
+        });
+
+        const map_style_group = {
+          'OSM': osm_map_style
+        };
+
+        this.markers_personal_data = this.leafletService.leaflet.layerGroup();
+        this.markers_instagram = this.leafletService.leaflet.layerGroup();
+        this.markers_facebook = this.leafletService.leaflet.layerGroup();
+        this.markers_twitter = this.leafletService.leaflet.layerGroup();
+
+        const markers_group = {
+          '<span style="font-size:18px; font-weight: bold; color:#5bbb62;">Device</span>': this.markers_personal_data,
+          '<span style="font-size:18px; font-weight: bold; color:#2964b3;">Facebook</span>': this.markers_facebook,
+          '<span style="font-size:18px; font-weight: bold; color:#8a3e92;">Instagram</span>': this.markers_instagram,
+          '<span style="font-size:18px; font-weight: bold; color:#3db0d7;">Twitter</span>': this.markers_twitter
+        };
+
+        this.leaflet_map = this.leafletService.leaflet.map('map', {
+          center: [ 41.9, 12.5 ],
+          zoom: 5,
+          layers: [osm_map_style, this.markers_personal_data, this.markers_facebook, this.markers_instagram, this.markers_twitter]
+        });
+
+        const control_options = {
+          collapsed: false,
+          hideSingleBase: true
+        };
+
+        this.leafletService.leaflet.control.layers(map_style_group, markers_group, control_options).addTo(this.leaflet_map);
+
       }
 
-      this.markers_layer.clearLayers();
+      this.markers_personal_data.clearLayers();
+      this.markers_facebook.clearLayers();
+      this.markers_instagram.clearLayers();
+      this.markers_twitter.clearLayers();
+
       this.statsService.getGPSMapStats(filters).then(
         (stats) => {
 
           if (stats && stats.length) {
             stats.forEach((position) => {
-              this.leafletService.leaflet.marker([position.latitude, position.longitude]).addTo(this.markers_layer);
+
+              if (position.source == 'personalData') {
+                this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: gps_icon})
+                  .addTo(this.markers_personal_data);
+              } else {
+
+                if (position.source.includes('instagram')) {
+                  const marker = this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: instagram_icon})
+                    .addTo(this.markers_instagram);
+
+                  const date = new Date(position.date);
+
+                  marker.bindPopup(
+                    '<p align="center"><i class="fa fa-instagram fa-2x" aria-hidden="true"></i></p>' +
+                    '<p>📍 ' + position.location + '</p>' +
+                    '<p>📆 ' + date.getDay() + ' / ' + date.getMonth() + ' / ' + date.getFullYear() + '</p>' +
+                    '<p>' + position.text + '</p>', {minWidth: 200});
+                } else {
+
+                  if (position.source.includes('facebook')) {
+                    const marker = this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: facebook_icon})
+                      .addTo(this.markers_facebook);
+
+                    const date = new Date(position.date);
+
+                    marker.bindPopup(
+                      '<p align="center"><i class="fa fa-facebook-official fa-2x" aria-hidden="true"></i></p>' +
+                      '<p>📍 ' + position.location + '</p>' +
+                      '<p>📆 ' + date.getDay() + ' / ' + date.getMonth() + ' / ' + date.getFullYear() + '</p>' +
+                      '<p>' + position.text + '</p>', {minWidth: 200});
+                  } else {
+
+                    if (position.source.includes('twitter')) {
+                      const marker = this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: twitter_icon})
+                        .addTo(this.markers_twitter);
+
+                      const date = new Date(position.date);
+
+                      marker.bindPopup(
+                        '<p align="center"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></p>' +
+                        '<p>📍 ' + position.location + '</p>' +
+                        '<p>📆 ' + date.getDay() + ' / ' + date.getMonth() + ' / ' + date.getFullYear() + '</p>' +
+                        '<p>' + position.text + '</p>', {minWidth: 200});
+                    } else {
+
+                      this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: gps_icon})
+                        .addTo(this.markers_personal_data);
+
+                    }
+
+                  }
+
+                }
+
+              }
             });
           }
 

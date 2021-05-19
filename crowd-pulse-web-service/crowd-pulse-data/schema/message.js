@@ -419,7 +419,11 @@ var buildCoordinatesMessagesQuery = function(from, to, lat, lng, ray) {
     $project: {
       _id: false,
       latitude:  true,
-      longitude: true
+      longitude: true,
+      source: true,
+      text: true,
+      location: true,
+      date: true
     }
   });
 

@@ -32,12 +32,12 @@ export class IdentitiesComponent implements OnInit {
   /**
    * Telegram image
   */
-  telegramImage ='assets/images/telegram.png';
+  telegramImage = 'assets/images/telegram.png';
 
   /**
    * Instagram image
    */
-  instagramImage ='assets/images/instagram.png';
+  instagramImage = 'assets/images/instagram.png';
 
   /**
    * Current logged user.
