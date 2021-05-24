@@ -23,7 +23,7 @@
     "got": "^11.8.2",
     "jsonwebtoken": "^8.5.1",
     "kerberos": "0.0.17",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.21",
     "mkdirp": "^0.5.5",
     "mongoose": "^4.13.21",
     "morgan": "^1.10.0",
