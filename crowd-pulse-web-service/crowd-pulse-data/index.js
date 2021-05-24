@@ -32,6 +32,7 @@ var DataLayer = function() {
       self.Interest = require('./model/interest')(self.connection);
       self.Connection = require('./model/connection')(self.connection);
       self.Like = require('./model/like')(self.connection);
+      self.MusicPreference = require('./model/musicPreference')(self.connection);
       self.ObjectId = mongoose.Types.ObjectId;
 
       // return the whole object
@@ -48,29 +49,29 @@ var DataLayer = function() {
   self.getDatabases = function() {
     var admin = self.connection.db.admin();
     return Q.ninvoke(admin, 'listDatabases')
-      .then(function(result) {
-        return result.databases;
-      });
+        .then(function(result) {
+          return result.databases;
+        });
   };
 
   self.initDatabase = function() {
     var appInit = self.App.findOne({name: 'testApp'})
-      .then(function(result) {
-        return result || self.App.createQ({
+        .then(function(result) {
+          return result || self.App.createQ({
             name: 'testApp',
             secret: 'yolo123',
             allowedGrants: ['authorization_code', 'password', 'refresh_token', 'client_credentials']
           });
-      });
+        });
 
     var userInit = self.User.findOne({username: 'admin'})
-      .then(function(result) {
-        return result || self.User.createQ({
+        .then(function(result) {
+          return result || self.User.createQ({
             username: 'admin',
             email: 'francescopontillo@gmail.com',
             secret: 'yolo'
           });
-      });
+        });
 
     return Q.all(appInit, userInit);
   };
