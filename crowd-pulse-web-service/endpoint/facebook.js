@@ -472,11 +472,16 @@ var updatePosts = function (username) {
                             location_longitude = post.place.location.longitude;
                         }
 
+                        var images = [];
+                        if(post.full_picture){
+                            images.push(post.full_picture);
+                        }
+
                         if (post.place || post.message || post.full_picture || post.story) {
                             messages.push({
                                 oId: post.id,
                                 text: post.message || '',
-                                picture: post.full_picture,
+                                images: images,
                                 source: 'facebook_' + facebookConfig.facebookId,
                                 location: location_name,
                                 latitude: location_latitude,

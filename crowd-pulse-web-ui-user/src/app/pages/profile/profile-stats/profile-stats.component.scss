@@ -31,6 +31,20 @@ agm-map {
   height: 100vh;
 }
 
+.map-container {
+  margin: 30px;
+  height: 600px;
+}
+
+.map-frame {
+  border: 2px solid black;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+}
+
 .list-div {
   padding: 12px;
   position: relative;

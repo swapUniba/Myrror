@@ -10,7 +10,6 @@ var MessageSchema = builder(schemas.message, {
   id: mongoose.Schema.ObjectId,
   oId: String,
   text: String,
-  picture: String,
   story: String,
   source: String,
   fromUser: String,
@@ -397,7 +396,37 @@ var buildStatMapQuery = function(type, terms, from, to, sentiment, language, lat
       fromUser: true
     }
   });
- // console.log(aggregations);
+
+  return aggregations;
+};
+
+var buildCoordinatesMessagesQuery = function(from, to, lat, lng, ray) {
+  // create the filter
+  var filter = buildFilter(undefined, undefined, from, to, undefined, undefined, lat, lng, ray);
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $match: {
+      latitude: {$ne:null},
+      longitude: {$ne:null}
+    }
+  }, {
+    $project: {
+      _id: false,
+      latitude:  true,
+      longitude: true,
+      source: true,
+      text: true,
+      location: true,
+      date: true
+    }
+  });
+
   return aggregations;
 };
 
@@ -647,6 +676,10 @@ MessageSchema.statics.statCluster = function(type, terms, from, to, sentiment, l
 
 MessageSchema.statics.statMap = function(type, terms, from, to, sentiment, language, lat, lng, ray) {
   return Q(this.aggregate(buildStatMapQuery(type, terms, from, to, sentiment, language, lat, lng, ray)).exec());
+};
+
+MessageSchema.statics.coordinatesMessages = function(from, to, lat, lng, ray) {
+  return Q(this.aggregate(buildCoordinatesMessagesQuery(from, to, lat, lng, ray)).exec());
 };
 
 MessageSchema.statics.statTopicMessages = function(type, terms, from, to, sentiment, language, lat, lng, ray, topic) {

@@ -1,3 +1,11 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+
 <div ngClass.gt-sm="main-content-page" fxLayout.xs="column" fxLayout.sm="column" fxLayout="row" fxLayoutWrap
      xmlns="http://www.w3.org/1999/html">
 
@@ -145,10 +153,11 @@
     <ng-template #noChart>
 
       <!-- map -->
-      <mat-card *ngIf="selected.visualization && selected.visualization.id == 'personaldata-gps' && gpsCoordinate; else noMap"
+      <mat-card *ngIf="selected.visualization && selected.visualization.id == 'personaldata-gps'; else noMap"
                 class="stats-card">
         <h2>{{selected.visualization.name}}</h2>
         <p>{{selected.visualization.description}}</p>
+        <!--
         <agm-map [latitude]="gpsCoordinate[0].latitude" [longitude]="gpsCoordinate[0].longitude">
 
           <agm-marker [latitude]="gpsCoordinate[0].latitude"
@@ -165,6 +174,14 @@
             </agm-polyline-point>
           </agm-polyline>
         </agm-map>
+        -->
+
+        <div class="map-container">
+          <div class="map-frame">
+            <div id="map"></div>
+          </div>
+        </div>
+
       </mat-card>
 
       <ng-template #noMap>
@@ -393,22 +410,22 @@
                 <mat-card *ngIf="selected.visualization && selected.visualization.id == 'medical-area' && medicalArea && medicalArea.length"
                   class="stats-card">
                   <div class="list-div" fxLayout>
-  
+
                     <div fxFlex="30">
                       <p>MEDICAL AREA</p>
                     </div>
-            
-            
+
+
                     </div>
-                    
-                     
+
+
                       <div class="list-div" fxLayout *ngFor="let tp of medicalArea">
-            
+
                         <div fxFlex="30">
                           <p class="stats-ma">{{ tp.medicalArea }}</p>
                         </div>
-          
-            
+
+
                         <mat-divider></mat-divider>
                       </div>
                 </mat-card>
@@ -419,30 +436,30 @@
                     <div fxFlex="30">
                       <p>THERAPY NAME</p>
                     </div>
-            
+
                     <div fxFlex="30">
                       <p>DRUG NAME</p>
                     </div>
-            
+
                     <div fxFlex="30">
                       <p>DOSAGE</p>
                     </div>
-            
+
                     </div>
                     <div class="list-div" fxLayout *ngFor="let tp of therapy">
 
                       <div fxFlex="30">
                         <p class="stats-all">{{ tp.therapyName }}</p>
                       </div>
-          
+
                       <div  fxFlex="30">
                         <p class="stats-all">{{ tp.drug_name}}</p>
                       </div>
-          
+
                       <div fxFlex>
                         <p class="stats-all" >{{ tp.dosage }}</p>
                       </div>
-          
+
                       <mat-divider></mat-divider>
                     </div>
                 </mat-card>
@@ -458,14 +475,14 @@
                   <div fxFlex="30">
                     <p>DIAGNOSIS ACCURACY</p>
                   </div>
-          
-          
-          
+
+
+
                   </div>
-                  
-                   
+
+
                     <div class="list-div" fxLayout *ngFor="let dg of diagnosis">
-          
+
                       <div fxFlex="30">
                         <p class="stats-ma">{{ dg.diagnosis_name }}</p>
                       </div>
@@ -473,15 +490,15 @@
                       <div fxFlex="30">
                         <p class="stats-ma">{{ dg.diagnosis_accuracy }}</p>
                       </div>
-        
-          
+
+
                       <mat-divider></mat-divider>
                     </div>
               </mat-card>
               <mat-card *ngIf="selected.visualization && selected.visualization.id == 'analysis-list' && analysis && analysis.length"
                   class="stats-card">
                   <div class="list-div" fxLayout>
-  
+
                     <div fxFlex="30">
                       <p>ANALYSIS NAME</p>
                     </div>
@@ -489,13 +506,13 @@
                     <div fxFlex="30">
                       <p>RESULT</p>
                     </div>
-            
-            
+
+
                     </div>
-                    
-                     
+
+
                       <div class="list-div" fxLayout *ngFor="let tp of analysis">
-            
+
                         <div fxFlex="30">
                           <p class="stats-ma">{{ tp.analysisName }}</p>
                         </div>
@@ -503,8 +520,8 @@
                         <div fxFlex="30">
                           <p class="stats-ma">{{ tp.result }} {{ tp.unit }}</p>
                         </div>
-          
-            
+
+
                         <mat-divider></mat-divider>
                       </div>
                 </mat-card>
@@ -524,16 +541,16 @@
                   <div fxFlex="30">
                     <p>DIAGNOSIS</p>
                   </div>
-          
+
                   <div fxFlex="30">
                     <p>MEDICAL PRESCRIPTION</p>
                   </div>
-          
+
                   </div>
-                  
-                   
+
+
                     <div class="list-div" fxLayout *ngFor="let mv of medicalVisit">
-          
+
                       <div fxFlex="30">
                         <p class="stats-ma">{{ mv.nameVisit }}</p>
                       </div>
@@ -549,8 +566,8 @@
                       <div fxFlex="30">
                         <p class="stats-ma">{{ mv.medicalPrescription }}</p>
                       </div>
-        
-          
+
+
                       <mat-divider></mat-divider>
                     </div>
               </mat-card>
@@ -570,12 +587,12 @@
                   <div fxFlex="30">
                     <p>COMPLETE DIAGNOSY</p>
                   </div>
-          
+
                   </div>
-                  
-                   
+
+
                     <div class="list-div" fxLayout *ngFor="let di of disease">
-          
+
                       <div fxFlex="30">
                         <p class="stats-ma">{{ di.nameDisease }}</p>
                       </div>
@@ -587,8 +604,8 @@
                       <div fxFlex="30">
                         <p class="stats-ma">{{ di.completeDiagnosis }}</p>
                       </div>
-        
-          
+
+
                       <mat-divider></mat-divider>
                     </div>
               </mat-card>
@@ -610,12 +627,12 @@
                   <div fxFlex="30">
                     <p>DIAGNOSIS</p>
                   </div>
-          
+
                   </div>
-                  
-                   
+
+
                     <div class="list-div" fxLayout *ngFor="let h of hospitalization">
-          
+
                       <div fxFlex="30">
                         <p class="stats-ma">{{ h.name }}</p>
                       </div>
@@ -627,14 +644,14 @@
                       <div fxFlex="30">
                         <p class="stats-ma">{{ h.diagnosisHospitalization }}</p>
                       </div>
-        
-          
+
+
                       <mat-divider></mat-divider>
                     </div>
               </mat-card>
 
 
-              
+
                 <!-- chart/map selected but no data available -->
 
 

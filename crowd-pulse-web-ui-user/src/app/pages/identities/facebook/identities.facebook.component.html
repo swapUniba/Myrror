@@ -65,14 +65,14 @@
             <div *ngIf="posts.length > 0; else noPosts">
               <mat-card-title>Your last Posts</mat-card-title>
               <div class="post-like-div" *ngFor="let post of posts">
-                <p *ngIf="post.location">{{ user.identities.facebook.name }} was in {{ post.location }}</p>
-                <p *ngIf="post.story">{{ post.story }}</p>
-                <p *ngIf="post.text">"{{ post.text }}"</p>
-                <p *ngIf="post.location || post.story || post.text || post.picture" style="color: #d3d3d3; font-size: small;">{{ post.date | date:'dd/LL/yyyy HH:mm' }}</p>
-                <div *ngIf="post.picture"><img src="{{ post.picture }}" width="50%" height="50%"></div>
-                <mat-divider></mat-divider>
+                <p *ngIf="post.story" style="font-size: larger">{{ post.story }}</p>
+                <p *ngIf="post.text" style="font-size: larger">{{ post.text }}</p>
+                <p *ngIf="post.location">📍 {{ post.location }}</p>
+                <p *ngIf="post.location || post.story || post.text || post.images" style="color: #d3d3d3; font-size: small;">{{ post.date | date:'dd/LL/yyyy HH:mm' }}</p>
+                <div *ngIf="post.images"><img src="{{ post.images[0] }}" width="50%" height="50%"></div>
+                <mat-divider style="margin-top: 10px; margin-bottom: 10px"></mat-divider>
               </div>
-              <button mat-raised-button color="primary" (click)="updatePosts(null, true)">
+              <button mat-raised-button color="primary" (click)="updatePosts(null, true)" style="margin-top: 10px">
                 <mat-icon aria-label="get_data">cached</mat-icon>
                 Update Posts
               </button>

@@ -570,11 +570,11 @@ export class StatsService {
       if (!isNullOrUndefined(filter.dateTo)) {
         params += 'to=' + filter.dateTo.toISOString() + '&';
       }
-      
+
       if (!isNullOrUndefined(filter.selectedAnalysis)) {
         params += 'name=' + filter.selectedAnalysis + '&';
       }
-      
+
     }
     return this.http.get(`${this.url}${API_STATS_ANALYSIS_LINE_DATA_SOURCE}${params}`).toPromise();
   }

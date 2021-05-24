@@ -30,8 +30,15 @@ var facebook = require('./../endpoint/facebook');
 var linkedIn = require('./../endpoint/linkedin');
 var fitbit = require('./../endpoint/fitbit');
 var telegram = require('./../endpoint/telegram');
-
+var music = require('./../endpoint/music');
+var news = require('./../endpoint/news');
+var training = require('./../endpoint/training');
+var programmatv = require('./../endpoint/programmatv');
+var removeInterest = require('../endpoint/removeInterest');
+var video = require('./../endpoint/video');
+var recipes = require('./../endpoint/recipes');
 var instagram = require('./../endpoint/instagram');
+
 var endpointAuth = require('./../endpoint/auth');
 var socketLogs = require('./../sockets/logs');
 var socketMobileApp = require('./../sockets/mobileapp');
@@ -91,6 +98,13 @@ var webServiceSetup = function(crowdPulse) {
   app.use(API, fitbit.endpoint());
   app.use(API, instagram.endpoint());
   app.use(AUTH, endpointAuth());
+  app.use(API, music.endpoint());
+  app.use(API, training.endpoint());
+  app.use(API,news.endpoint());
+  app.use(API,programmatv.endpoint());
+  app.use(API,video.endpoint());
+  app.use(API,recipes.endpoint());
+  app.use(API,removeInterest.endpoint());
 
   return crowdPulse;
 };
@@ -147,36 +161,36 @@ var scheduleJobSetup = function () {
 
 module.exports = function() {
   return connect()
-    .then(function() {
-      return bootstrapMeMaybe(crowdPulse, config);
-    })
-    .then(function() {
-      return webServiceSetup(crowdPulse);
-    })
-    .then(function() {
-      return webSocketSetup(crowdPulse);
-    })
-    .then(function () {
-      return scheduleJobSetup();
-    })
-    .then(function() {
+      .then(function() {
+        return bootstrapMeMaybe(crowdPulse, config);
+      })
+      .then(function() {
+        return webServiceSetup(crowdPulse);
+      })
+      .then(function() {
+        return webSocketSetup(crowdPulse);
+      })
+      .then(function () {
+        return scheduleJobSetup();
+      })
+      .then(function() {
 
-      app.set('port', config.port || process.env.PORT || 5000);
+        app.set('port', config.port || process.env.PORT || 5000);
 
-      server.listen(app.get('port'), function() {
-        console.log('Crowd Pulse Web Service listening at %s:%s...',
-          server.address().address, server.address().port);
-        console.log('Press CTRL+C to quit.');
+        server.listen(app.get('port'), function() {
+          console.log('Crowd Pulse Web Service listening at %s:%s...',
+              server.address().address, server.address().port);
+          console.log('Press CTRL+C to quit.');
+        });
+
+        return {
+          app: app,
+          io: io,
+          server: server,
+          crowdPulse: crowdPulse
+        };
+      })
+      .catch(function(err) {
+        console.error(err.stack);
       });
-
-      return {
-        app: app,
-        io: io,
-        server: server,
-        crowdPulse: crowdPulse
-      };
-    })
-    .catch(function(err) {
-      console.error(err.stack);
-    });
 };

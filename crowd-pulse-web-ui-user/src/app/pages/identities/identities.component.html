@@ -98,7 +98,7 @@
           <mat-card fxFlex="30" fxFlex.lt-md="100" class="identities-card" *ngIf="user.identities.instagram">
             <mat-card-title>Instagram</mat-card-title>
             <div fxLayout fxLayoutAlign="start center">
-              <img class="identities-user-image" src="{{user.identities.instagram.picture}}">
+              <img class="identities-user-image" src="{{instagramImage}}">
               <div>
                 <button mat-raised-button color="primary" [routerLink]="appRoutes.identities.instagram">Settings</button>
               </div>

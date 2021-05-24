@@ -9,11 +9,10 @@ var InstagramProfileSchema = require('./../crowd-pulse-data/schema/instagramProf
 var batch = require('./../lib/batchOperations');
 
 const DB_PROFILES = databaseName.profiles;
-const userInstagram = require("user-instagram");
 const DEFAULT_LANGUAGE = 'en';
 
-var OSM_REQUEST_URL = 'https://nominatim.openstreetmap.org/search?';
-var OSM_REQUEST_OPTIONS = '&limit=1&format=json';
+const userInstagram = require("user-instagram");
+const axios = require('axios');
 
 exports.endpoint = function () {
 
@@ -34,7 +33,7 @@ exports.endpoint = function () {
                         res.status(200);
                         res.json({auth: true, private: false});
                     }
-                }).catch(function () {
+                }).catch(function (e) {
                     res.status(200);
                     res.json({auth: false, private: false});
                 });
@@ -209,10 +208,14 @@ var setUserProfile = function (myrrorUsername, userData) {
             profile.identities.instagram.follows = userData.subscribtions;
             profile.identities.instagram.followed_by = userData.subscribersCount;
 
+            /*
+
             // change profile picture
             if (profile.identities.instagram.picture) {
                 profile.pictureUrl = profile.identities.instagram.picture;
             }
+
+             */
 
             profile.save().then(function () {
                 console.log("Instagram profile of " + myrrorUsername + " setted at " + new Date());
@@ -253,10 +256,14 @@ var updateUserProfile = function (username, callback) {
                 profile.identities.instagram.follows = userData.subscribtions;
                 profile.identities.instagram.followed_by = userData.subscribersCount;
 
+                /*
+
                 // change profile picture
                 if (profile.identities.instagram.picture) {
                     profile.pictureUrl = profile.identities.instagram.picture;
                 }
+
+                */
 
                 profile.save().then(function () {
                     console.log("Instagram profile of " + username + " updated at " + new Date());
@@ -280,8 +287,7 @@ var updateUserProfile = function (username, callback) {
  */
 var updatePosts = function (username) {
     var dbConnection = new CrowdPulse();
-    var friendsToSave = [];
-    var temp = [];
+
     return dbConnection.connect(config.database.url, DB_PROFILES).then(function (conn) {
         return conn.Profile.findOne({username: username}, function (err, profile) {
             if (profile) {
@@ -296,10 +302,7 @@ var updatePosts = function (username) {
 
                     var messages = [];
 
-                    var formatted_posts_info = user.posts.map(async function (user_post) {
-                        var post = await userInstagram.getPostData(user_post.shortCode);
-
-                        var query = 'q=';
+                    var formatted_posts_info = user.posts.map(async function (post) {
 
                         var location_name = null;
                         var location_latitude = null;
@@ -307,19 +310,12 @@ var updatePosts = function (username) {
 
                         if (post.location) {
                             location_name = post.location.name;
-                            var location = JSON.parse(post.location.jsonName);
-                            query = query + location.street_address + ' ' + location.city_name + ' ' + location.zip_code + ' ' + location.country_code;
-                            query = query.split(' ').join('+');
 
-                            await got(OSM_REQUEST_URL + query + OSM_REQUEST_OPTIONS).then(function (result) {
-                                if (result.statusCode === 200) {
-                                    var location_details = JSON.parse(result.body)[0];
-                                    if (location_details) {
-                                        location_latitude = location_details.lat;
-                                        location_longitude = location_details.lon;
-                                    }
-                                }
-                            });
+                            var coordinates = await get_location_coordinate(post.location.id);
+                            if(coordinates){
+                                location_latitude = coordinates.latitude;
+                                location_longitude = coordinates.longitude;
+                            }
                         }
 
                         var description = '';
@@ -328,46 +324,27 @@ var updatePosts = function (username) {
                         }
 
                         var images = [];
-                        if (post.childrenPictures.length > 0) {
-                            post.childrenPictures.forEach(function (childPicture) {
-                                images.push(childPicture.displayUrl);
+                        images.push(post.url);
+                        if (post.children.length > 0) {
+                            post.children.forEach(function (childPicture) {
+                                images.push(childPicture.imageUrl);
                             })
+                        } else {
+                            images.push(post.imageUrl);
                         }
-
-                        // users in photo control
-                        var users = [];
-                        var friends = [];
-
-                        if (post.taggedUsers) {
-
-                            post.taggedUsers.forEach(function (user) {
-                                if (user.username !== instagramUsername) {
-                                    users.push(user.username);
-                                    friends.push({
-                                        username: username,
-                                        contactId: user.username,
-                                        source: 'instagram'
-                                    })
-                                }
-
-                            });
-                        }
-                        temp.push(friends);
 
                         return {
-                            oId: post.takenAt,
-                            picture: post.displayUrl,
+                            oId: post.timestamp,
                             text: description,
                             source: 'instagram_' + instagramConfig.instagramId,
                             fromUser: instagramConfig.instagramId,
-                            date: new Date(post.takenAt * 1000), //unix time *1000
+                            date: new Date(post.timestamp * 1000), //unix time *1000
                             images: images,
                             likes: post.likesCount,
-                            comments: post.comments.length,
+                            comments: post.commentsCount,
                             location: location_name,
                             latitude: location_latitude,
                             longitude: location_longitude,
-                            refUsers: users,
                             language: DEFAULT_LANGUAGE,
                             share: share
                         };
@@ -380,16 +357,6 @@ var updatePosts = function (username) {
                             if (instagramConfig.lastPostId < res.oId) {
                                 messages.push(res);
                             }
-                        });
-
-                        temp.forEach(function (u) {
-                            if (u && u.length > 0) {
-                                friendsToSave.push(u)
-                            }
-                        });
-
-                        storeFriends(friendsToSave, username).then(function () {
-                            storeFriends(friendsToSave, databaseName.globalData);
                         });
 
                         storeMessages(messages, username).then(function () {
@@ -440,6 +407,38 @@ var updatePosts = function (username) {
             }
         });
     });
+};
+
+/**
+ * Get coordinates for Instagram posts location
+ * @param id
+ * @returns coordinate
+ */
+async function get_location_coordinate(id){
+    const URL = 'https://www.instagram.com/explore/locations/' + id + '/';
+    const REQUEST_PARAMETERS = {
+        method: 'GET',
+        url: URL
+    };
+
+    var coordinate = null;
+
+    try{
+        var loc_page = await axios(REQUEST_PARAMETERS);
+
+        if(loc_page.data){
+            var latitude = loc_page.data.match(/<meta property="place:location:latitude" content="(.*)" \/>/)[1];
+            var longitude = loc_page.data.match(/<meta property="place:location:longitude" content="(.*)" \/>/)[1];
+            coordinate = {
+                latitude: latitude,
+                longitude: longitude
+            };
+        }
+    }catch (err){
+        coordinate = null;
+    }
+
+    return coordinate;
 };
 
 /**

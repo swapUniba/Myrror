@@ -6,14 +6,15 @@ import {TwitterService} from '../../../services/twitter.service';
 import {FacebookService} from '../../../services/facebook.service';
 import {InstagramService} from '../../../services/instagram.service';
 import {FitbitService} from '../../../services/fitbit.service';
-import { TelegramService } from '../../../services//telegram.service';
+import {TelegramService} from '../../../services//telegram.service';
+import {LeafletService} from '../../../services/leaflet.service';
 
 @Component({
   styleUrls: ['./profile-stats.component.scss'],
   templateUrl: './profile-stats.component.html',
 })
-export class ProfileStatsComponent {
 
+export class ProfileStatsComponent {
 
   /**
    * User data.
@@ -117,7 +118,8 @@ export class ProfileStatsComponent {
   }, {
     name: 'GPS Positions',
     id: 'personaldata-gps',
-    description: 'This view shows your movements, based on your GPS coordinates (S= Start Position, E=End Position)',
+    description: 'This view shows the GPS coordinates from the physical devices connected to your account (Android and Fitbit)' +
+      ' and the locations of your posts on Facebook, Instagram and Twitter. Clicking on a marker of a post, will show you a popup with the details.',
     types: [
       {
         name: 'map',
@@ -302,7 +304,7 @@ export class ProfileStatsComponent {
       },
     ]
   },
-    
+
 
     // TODO add here new visualization
   ];
@@ -327,9 +329,23 @@ export class ProfileStatsComponent {
   chartsLoading: boolean;
 
   /**
-   * GPS coordinate.
+   * Check if the map is visible.
    */
-  gpsCoordinate: {latitude: number, longitude: number}[];
+  isMapSet: boolean;
+
+  /**
+   * Map to show.
+   */
+  leaflet_map: any;
+
+  /**
+   * Map layers that contain markers.
+   */
+  markers_personal_data: any;
+  markers_instagram: any;
+  markers_facebook: any;
+  markers_twitter: any;
+
 
   /**
    * Social Network messages (tweets, Facebook posts, Instagram posts, etc).
@@ -382,42 +398,42 @@ export class ProfileStatsComponent {
    * Fitbit user body detected by sensors.
    */
   body: any;
-  
-   /**
+
+  /**
    * Medical Areas array
    */
   medicalArea = [];
   /**
-  * therapy array
-  */
+   * therapy array
+   */
   therapy = [];
-   /**
-  * diagnosis array
-  */
+  /**
+   * diagnosis array
+   */
   diagnosis = [];
 
-    /**
-  * analysis array
-  */
- analysis = [];
-
- /**
-  * medical visit array
-  */
- medicalVisit = [];
+  /**
+   * analysis array
+   */
+  analysis = [];
 
   /**
-  * disease array
-  */
- disease = [];
+   * medical visit array
+   */
+  medicalVisit = [];
 
   /**
-  * hospitalization array
-  */
- hospitalization = [];
-  
+   * disease array
+   */
+  disease = [];
+
+  /**
+   * hospitalization array
+   */
+  hospitalization = [];
 
   constructor(
+    private leafletService: LeafletService,
     private statsService: StatsService,
     private authService: AuthService,
     private facebookService: FacebookService,
@@ -446,8 +462,20 @@ export class ProfileStatsComponent {
       this.customChart = null;
       this.chartsLoading = false;
       this.socialMessages = null;
-      this.gpsCoordinate = null;
+      this.cleanMap();
     }
+  }
+
+  /**
+   * Clean the map
+   */
+  cleanMap() {
+    this.isMapSet = undefined;
+    this.leaflet_map = undefined;
+    this.markers_personal_data = undefined;
+    this.markers_instagram = undefined;
+    this.markers_facebook = undefined;
+    this.markers_twitter = undefined;
   }
 
   /**
@@ -455,6 +483,9 @@ export class ProfileStatsComponent {
    */
   updateChart() {
     this.customChart = undefined;
+    if (this.selected.visualization.id !== 'personaldata-gps') {
+      this.cleanMap();
+    }
     this.buildCustomChart();
   }
 
@@ -507,7 +538,7 @@ export class ProfileStatsComponent {
         break;
       case 'body-list':
         this.buildBodyList();
-        break; 
+        break;
       case 'medical-area':
         this.getTelegramMedicalArea(1000);
         break;
@@ -519,7 +550,7 @@ export class ProfileStatsComponent {
         break;
       case 'analysis-list':
         this.buildAnalysisDataSourceTable();
-        break; 
+        break;
       case 'medicalVisit-list':
         this.buildMedicalVisitDataSourceTable();
         break;
@@ -533,7 +564,7 @@ export class ProfileStatsComponent {
         this.customChart = null;
         this.chartsLoading = false;
         this.socialMessages = null;
-        this.gpsCoordinate = null;
+        this.cleanMap();
         break;
     }
   }
@@ -572,6 +603,7 @@ export class ProfileStatsComponent {
    * Build a map with the user GPS positions.
    */
   private buildGPSPositionChart() {
+
     const filters = {
       latitude: this.filters.filterCoordinate.latitude,
       longitude: this.filters.filterCoordinate.longitude,
@@ -579,14 +611,159 @@ export class ProfileStatsComponent {
       dateFrom: this.filters.filterDate.dateFrom,
       dateTo: this.filters.filterDate.dateTo,
     };
-    this.gpsCoordinate = null;
-    return this.statsService.getGPSMapStats(filters).then(
-      (stats) => {
-        if (stats && stats.length) {
-          this.gpsCoordinate = stats;
-        }
+
+    const gps_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-gps.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const facebook_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-facebook.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const instagram_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-instagram.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const twitter_icon = new this.leafletService.leaflet.Icon({
+      iconUrl: 'assets/marker/marker-icon-twitter.png',
+      shadowUrl: 'assets/marker/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    setTimeout(() => {
+
+      if (!this.isMapSet) {
+        this.isMapSet = true;
+
+        const osm_map_style = this.leafletService.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          minZoom: 3,
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+
+        const map_style_group = {
+          'OSM': osm_map_style
+        };
+
+        this.markers_personal_data = this.leafletService.leaflet.layerGroup();
+        this.markers_instagram = this.leafletService.leaflet.layerGroup();
+        this.markers_facebook = this.leafletService.leaflet.layerGroup();
+        this.markers_twitter = this.leafletService.leaflet.layerGroup();
+
+        const markers_group = {
+          '<span style="font-size:18px; font-weight: bold; color:#5bbb62;">Device</span>': this.markers_personal_data,
+          '<span style="font-size:18px; font-weight: bold; color:#2964b3;">Facebook</span>': this.markers_facebook,
+          '<span style="font-size:18px; font-weight: bold; color:#8a3e92;">Instagram</span>': this.markers_instagram,
+          '<span style="font-size:18px; font-weight: bold; color:#3db0d7;">Twitter</span>': this.markers_twitter
+        };
+
+        this.leaflet_map = this.leafletService.leaflet.map('map', {
+          center: [ 41.9, 12.5 ],
+          zoom: 5,
+          layers: [osm_map_style, this.markers_personal_data, this.markers_facebook, this.markers_instagram, this.markers_twitter]
+        });
+
+        const control_options = {
+          collapsed: false,
+          hideSingleBase: true
+        };
+
+        this.leafletService.leaflet.control.layers(map_style_group, markers_group, control_options).addTo(this.leaflet_map);
+
       }
-    );
+
+      this.markers_personal_data.clearLayers();
+      this.markers_facebook.clearLayers();
+      this.markers_instagram.clearLayers();
+      this.markers_twitter.clearLayers();
+
+      this.statsService.getGPSMapStats(filters).then(
+        (stats) => {
+
+          if (stats && stats.length) {
+            stats.forEach((position) => {
+
+              if (position.source == 'personalData') {
+                this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: gps_icon})
+                  .addTo(this.markers_personal_data);
+              } else {
+
+                if (position.source.includes('instagram')) {
+                  const marker = this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: instagram_icon})
+                    .addTo(this.markers_instagram);
+
+                  const date = new Date(position.date);
+
+                  marker.bindPopup(
+                    '<p align="center"><i class="fa fa-instagram fa-2x" aria-hidden="true"></i></p>' +
+                    '<p>📍 ' + position.location + '</p>' +
+                    '<p>📆 ' + date.getDay() + ' / ' + date.getMonth() + ' / ' + date.getFullYear() + '</p>' +
+                    '<p>' + position.text + '</p>', {minWidth: 200});
+                } else {
+
+                  if (position.source.includes('facebook')) {
+                    const marker = this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: facebook_icon})
+                      .addTo(this.markers_facebook);
+
+                    const date = new Date(position.date);
+
+                    marker.bindPopup(
+                      '<p align="center"><i class="fa fa-facebook-official fa-2x" aria-hidden="true"></i></p>' +
+                      '<p>📍 ' + position.location + '</p>' +
+                      '<p>📆 ' + date.getDay() + ' / ' + date.getMonth() + ' / ' + date.getFullYear() + '</p>' +
+                      '<p>' + position.text + '</p>', {minWidth: 200});
+                  } else {
+
+                    if (position.source.includes('twitter')) {
+                      const marker = this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: twitter_icon})
+                        .addTo(this.markers_twitter);
+
+                      const date = new Date(position.date);
+
+                      marker.bindPopup(
+                        '<p align="center"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></p>' +
+                        '<p>📍 ' + position.location + '</p>' +
+                        '<p>📆 ' + date.getDay() + ' / ' + date.getMonth() + ' / ' + date.getFullYear() + '</p>' +
+                        '<p>' + position.text + '</p>', {minWidth: 200});
+                    } else {
+
+                      this.leafletService.leaflet.marker([position.latitude, position.longitude], {icon: gps_icon})
+                        .addTo(this.markers_personal_data);
+
+                    }
+
+                  }
+
+                }
+
+              }
+            });
+          }
+
+        }
+      );
+
+    }, 200);
+
+
   }
 
   /**
@@ -779,7 +956,7 @@ export class ProfileStatsComponent {
     }
 
     switch (type) {
-       case 'spline':
+      case 'spline':
         return this.statsService.getAppInfoTimelineStats(filters).then(
           (stats) => {
 
@@ -1211,13 +1388,13 @@ export class ProfileStatsComponent {
           (res) => {
             if (res && res.length) {
 
-              res.sort(function(a, b){
+              res.sort(function (a, b) {
                 return a.timestamp - b.timestamp;
               });
               const finalArray = res.map(function (obj) {
                 return obj.timestamp;
               });
-              this.uniqueArray = finalArray.filter(function(item, pos) {
+              this.uniqueArray = finalArray.filter(function (item, pos) {
                 return finalArray.indexOf(item) == pos;
               });
               this.activitiesFitbit = res;
@@ -1236,13 +1413,13 @@ export class ProfileStatsComponent {
         this.statsService.getActivityDataFitbit(filters).then(
           (res) => {
             if (res && res.length) {
-              res.sort(function(a, b){
+              res.sort(function (a, b) {
                 return a.timestamp - b.timestamp;
               });
               const finalArray = res.map(function (obj) {
                 return obj.timestamp;
               });
-              this.uniqueArray = finalArray.filter(function(item, pos) {
+              this.uniqueArray = finalArray.filter(function (item, pos) {
                 return finalArray.indexOf(item) == pos;
               });
               this.activitiesFitbit = res;
@@ -1252,7 +1429,6 @@ export class ProfileStatsComponent {
         break;
     }
   }
-
 
 
   /**
@@ -1279,8 +1455,6 @@ export class ProfileStatsComponent {
       }
     );
   }
-
-
 
 
   /**
@@ -1310,8 +1484,6 @@ export class ProfileStatsComponent {
   }
 
 
-
-
   /**
    * Build the user foods list.
    */
@@ -1337,8 +1509,6 @@ export class ProfileStatsComponent {
       }
     );
   }
-
-
 
 
   /**
@@ -1408,108 +1578,110 @@ export class ProfileStatsComponent {
             this.chartsLoading = false;
           }
         );
-       break;
+        break;
     }
   }
 
 
-  private buildMedicalAreaList(){
+  private buildMedicalAreaList() {
     this.getTelegramMedicalArea(1000);
 
-}
+  }
 
- private getTelegramMedicalArea(numberToRead: Number){
-  this.telegramService.userMedicalArea(numberToRead).subscribe(
-    (res) => {
-      if (res.medicalArea && res.medicalArea.length > 0) {
+  private getTelegramMedicalArea(numberToRead: Number) {
+    this.telegramService.userMedicalArea(numberToRead).subscribe(
+      (res) => {
+        if (res.medicalArea && res.medicalArea.length > 0) {
           this.medicalArea = res.medicalArea;
 
-        } 
-       
-    },
-    (err) => {
-     
-    });
-
-}
-private buildTherapyDataSourceTable(type?: string): Promise<Chart | any> {
-  return this.statsService.getTherapyTypeDataTelegramTable(this.filters.filterDate).then(
-    (stats) => {    
-      this.therapy = stats;
-      
-    },
-    (err) => {
-      this.chartsLoading = false;
-    });
-}
-private buildDiagnosisDataSourceTable(type?: string): Promise<Chart | any> {
-  return this.statsService.getDiagnosisTypeDataTelegramBar(this.filters.filterDate).then(
-    (stats) => {    
-      this.diagnosis = stats;
-      
-    },
-    (err) => {
-      this.chartsLoading = false;
-    });
-}
-private buildAnalysisDataSourceTable(type?: string): Promise<Chart | any> {
-  return this.statsService.getAnalysisTypeDataTelegramLine(this.filters.filterDate).then(
-    (stats) => {
-      
-      var i = 0;
-
-      for(i= 0; i< stats.length; i++){
-        if(stats[i].analysisName == null){
-          stats.splice(i, 1)
-          i--;
         }
-      }
-      
-      this.analysis = stats;
-      
-      
-    },
-    (err) => {
-      this.chartsLoading = false;
-    });
-}
+
+      },
+      (err) => {
+
+      });
+
+  }
+
+  private buildTherapyDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getTherapyTypeDataTelegramTable(this.filters.filterDate).then(
+      (stats) => {
+        this.therapy = stats;
+
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
+
+  private buildDiagnosisDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getDiagnosisTypeDataTelegramBar(this.filters.filterDate).then(
+      (stats) => {
+        this.diagnosis = stats;
+
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
+
+  private buildAnalysisDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getAnalysisTypeDataTelegramLine(this.filters.filterDate).then(
+      (stats) => {
+
+        let i = 0;
+
+        for (i = 0; i < stats.length; i++) {
+          if (stats[i].analysisName == null) {
+            stats.splice(i, 1);
+            i--;
+          }
+        }
+
+        this.analysis = stats;
 
 
-private buildMedicalVisitDataSourceTable(type?: string): Promise<Chart | any> {
-  return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filters.filterDate).then(
-    (stats) => {    
-      this.medicalVisit = stats;
-      
-    },
-    (err) => {
-      this.chartsLoading = false;
-    });
-}
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
 
 
-private buildDiseaseDataSourceTable(type?: string): Promise<Chart | any> {
-  return this.statsService.getDiseaseTypeDataTelegramTable(this.filters.filterDate).then(
-    (stats) => {    
-      this.disease = stats;
-      
-    },
-    (err) => {
-      this.chartsLoading = false;
-    });
-}
+  private buildMedicalVisitDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getMedicalVisitTypeDataTelegramTable(this.filters.filterDate).then(
+      (stats) => {
+        this.medicalVisit = stats;
+
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
 
 
-private buildHospitalizationDataSourceTable(type?: string): Promise<Chart | any> {
-  return this.statsService.getHospitalizationTypeDataTelegramTable(this.filters.filterDate).then(
-    (stats) => {    
-      this.hospitalization = stats;
-      
-    },
-    (err) => {
-      this.chartsLoading = false;
-    });
-}
+  private buildDiseaseDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getDiseaseTypeDataTelegramTable(this.filters.filterDate).then(
+      (stats) => {
+        this.disease = stats;
 
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
+
+
+  private buildHospitalizationDataSourceTable(type?: string): Promise<Chart | any> {
+    return this.statsService.getHospitalizationTypeDataTelegramTable(this.filters.filterDate).then(
+      (stats) => {
+        this.hospitalization = stats;
+
+      },
+      (err) => {
+        this.chartsLoading = false;
+      });
+  }
 
 
 }/** Fine **/

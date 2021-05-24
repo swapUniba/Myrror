@@ -14,6 +14,7 @@ import { ErrorService } from './error.service';
 import {FitbitService} from './fitbit.service';
 import {InstagramService} from './instagram.service';
 import {TelegramService} from './telegram.service';
+import {LeafletService} from './leaflet.service';
 
 @NgModule({
   declarations: [],
@@ -39,6 +40,7 @@ import {TelegramService} from './telegram.service';
     LocalStorageService,
     ErrorService,
     FitbitService,
+    LeafletService
   ],
 })
 export class ServicesModule {}

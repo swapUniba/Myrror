@@ -8,7 +8,7 @@ import {ToastrService} from 'ngx-toastr';
 import {environment} from '../../../../environments/environment';
 import {ConfirmDialogComponent} from '../../../components/confirm-dialog/confirm-dialog.component';
 
-const DELAY_TIMEOUT = 3.5 * 1000; // milliseconds
+const DELAY_TIMEOUT = 10 * 1000; // milliseconds
 
 @Component({
   styleUrls: ['./identities.instagram.component.scss'],
@@ -120,7 +120,7 @@ export class IdentitiesInstagramComponent implements OnInit {
         }
       },
       (err) => {
-        this.toast.error('Server error occurred. Try again later.');
+        this.toast.error('Server error occurred. Try again later');
       });
   }
 
@@ -144,7 +144,7 @@ export class IdentitiesInstagramComponent implements OnInit {
         this.setupInstagramProfileTable();
       } else {
         if (showToast) {
-          this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+          this.toast.warning('Timeout not elapsed. Retry later');
         }
       }
     });
@@ -188,7 +188,7 @@ export class IdentitiesInstagramComponent implements OnInit {
           }
         } else {
           if (showToast) {
-            this.toast.warning('Timeout not elapsed. Retry in about five minutes');
+            this.toast.warning('Timeout not elapsed. Retry later');
           }
         }
       },
